@@ -1392,7 +1392,7 @@
           <div class="nav-item">
             <a href="{{ route('peminjam.jadwal') }}" class="nav-link {{ request()->routeIs('peminjam.jadwal') ? 'active' : '' }}">
               <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
-              <span>Jadwal Ruang</span>
+              <span>Jadwal Reguler</span>
             </a>
           </div>
           <div class="nav-item">

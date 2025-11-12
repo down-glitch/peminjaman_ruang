@@ -96,4 +96,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::get('/cek-jadwal', [PeminjamanController::class, 'cekJadwal'])->name('peminjaman.cekJadwal');
+    Route::get('/cek-jadwal-reguler', [PeminjamanController::class, 'cekJadwalReguler'])->name('peminjaman.cekJadwal.reguler');
+
+    Route::get('/api/jadwal-reguler/{roomId}/{day}', function($roomId, $day) {
+    $schedules = \App\Models\JadwalReguler::where('id_room', $roomId)
+        ->where('hari', $day)
+        ->get(['jam_mulai', 'jam_selesai', 'deskripsi']);
+    
+    return response()->json($schedules);
+});
 });

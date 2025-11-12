@@ -6,6 +6,8 @@ use App\Models\Room;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\JadwalReguler;
+
 
 class PeminjamanController extends Controller
 {
@@ -169,5 +171,49 @@ class PeminjamanController extends Controller
             ->get();
 
         return view('peminjam.jadwal-booking', compact('bookings'));
+    }
+
+    // ===================== CEK JADWAL REGULER (AJAX) =====================
+    public function cekJadwalReguler(Request $request)
+    {
+        $request->validate([
+            'id_room' => 'required|exists:rooms,id_room',
+            'tanggal' => 'required|date',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
+        ]);
+
+        // Get the day of the week from the provided date
+        $date = \Carbon\Carbon::parse($request->tanggal);
+        $hari = $date->locale('id')->dayName;
+        $hariList = ['Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa', 
+                     'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat', 'Saturday' => 'Sabtu'];
+        $hari = $hariList[$hari] ?? $hari;
+
+        // Check for conflicts with regular schedules
+        $conflicts = JadwalReguler::where('id_room', $request->id_room)
+            ->where('hari', $hari)
+            ->where(function ($query) use ($request) {
+                $query->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
+                      ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai])
+                      ->orWhere(function ($q) use ($request) {
+                          $q->where('jam_mulai', '<=', $request->jam_mulai)
+                            ->where('jam_selesai', '>=', $request->jam_selesai);
+                      });
+            })
+            ->get(['jam_mulai', 'jam_selesai', 'deskripsi']);
+
+        if ($conflicts->count() > 0) {
+            return response()->json([
+                'status' => 'bentrok',
+                'message' => 'Jadwal untuk ruangan ini bentrok dengan jadwal reguler.',
+                'data' => $conflicts
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'aman',
+            'message' => 'Tidak ada bentrok dengan jadwal reguler.'
+        ]);
     }
 }

@@ -68,7 +68,7 @@
     @if($bookings->count() > 0)
         <div class="booking-cards">
             @foreach($bookings as $index => $b)
-            <div class="booking-card" data-status="{{ $b->status }}">
+            <div class="booking-card" data-status="{{ $b->status }}" data-id="{{ $b->id }}">
                 <div class="card-header">
                     <div class="room-info">
                         <div class="room-icon">
@@ -109,8 +109,8 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="info-content">
-                                <label>Waktu</label>
-                                <span>{{ $b->jam_mulai }} - {{ $b->jam_selesai }}</span>
+                                <label>Sesi</label>
+                                <span>{{ \Carbon\Carbon::parse($b->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($b->jam_selesai)->format('H:i') }}</span>
                             </div>
                         </div>
                         <div class="info-item">
@@ -119,7 +119,27 @@
                             </div>
                             <div class="info-content">
                                 <label>Durasi</label>
-                                <span>{{ \Carbon\Carbon::parse($b->jam_mulai)->diffInHours(\Carbon\Carbon::parse($b->jam_selesai)) }} jam</span>
+                                <span>
+                                    @php
+                                        $start = \Carbon\Carbon::parse($b->jam_mulai);
+                                        $end = \Carbon\Carbon::parse($b->jam_selesai);
+                                        $duration = $end->diff($start);
+                                        $hours = $duration->h;
+                                        $minutes = $duration->i;
+                                        $totalMinutes = ($hours * 60) + $minutes;
+                                        $formattedDuration = '';
+                                        if ($hours > 0) {
+                                            $formattedDuration .= $hours . ' jam';
+                                        }
+                                        if ($minutes > 0) {
+                                            $formattedDuration .= ($formattedDuration ? ' ' : '') . $minutes . ' menit';
+                                        }
+                                        if ($totalMinutes == 0) {
+                                            $formattedDuration = '0 menit';
+                                        }
+                                    @endphp
+                                    {{ $formattedDuration }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -873,22 +893,129 @@
 </style>
 
 <script>
-    function filterTable() {
-        const filter = document.querySelector('.filter-select').value;
-        const cards = document.querySelectorAll('.booking-card');
-        
-        cards.forEach(card => {
-            if (filter === 'all' || card.dataset.status === filter) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
-    // Initialize filter on page load
     document.addEventListener('DOMContentLoaded', function() {
-        filterTable();
+        // Function to generate session options (7:00 to 15:30, 45 minutes each)
+        function generateSessions() {
+            const sessions = [];
+            let startHour = 7;
+            let startMinute = 0;
+            
+            while (startHour < 15 || (startHour === 15 && startMinute <= 30)) {
+                const endHour = startMinute === 0 ? startHour : startHour + 1;
+                const endMinute = startMinute === 0 ? 45 : 30;
+                
+                const startTime = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+                const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+                
+                sessions.push({
+                    id: sessions.length + 1,
+                    startTime: startTime,
+                    endTime: endTime
+                });
+                
+                // Move to next session
+                if (startMinute === 0) {
+                    startMinute = 45;
+                } else {
+                    startHour++;
+                    startMinute = 0;
+                }
+            }
+            
+            return sessions;
+        }
+        
+        const allSessions = generateSessions();
+        
+        // Get booking data from HTML data attributes
+        const bookingCards = document.querySelectorAll('.booking-card');
+        
+        bookingCards.forEach(card => {
+            const bookingId = card.dataset.id;
+            const sessionElement = document.getElementById(`session-${bookingId}`);
+            const durationElement = document.getElementById(`duration-${bookingId}`);
+            
+            // Extract booking data from card (in a real app, this would come from the server)
+            const bookingData = {
+                sesi_data: card.querySelector('.sesi-data')?.textContent,
+                jam_mulai: card.querySelector('.jam-mulai')?.textContent,
+                jam_selesai: card.querySelector('.jam-selesai')?.textContent
+            };
+            
+            let sessionData = [];
+            let durationMinutes = 0;
+            
+            // Parse session data if available
+            if (bookingData.sesi_data) {
+                try {
+                    sessionData = JSON.parse(bookingData.sesi_data);
+                    // Calculate total duration
+                    durationMinutes = sessionData.length * 45;
+                } catch (e) {
+                    console.error('Error parsing session data:', e);
+                }
+            } else if (bookingData.jam_mulai && bookingData.jam_selesai) {
+                // Fallback to calculate duration from jam_mulai and jam_selesai
+                const start = new Date(`2000-01-01T${bookingData.jam_mulai}`);
+                const end = new Date(`2000-01-01T${bookingData.jam_selesai}`);
+                durationMinutes = (end - start) / 60000; // Convert to minutes
+                
+                // Try to find matching sessions
+                const startSession = allSessions.find(s => s.startTime === bookingData.jam_mulai);
+                const endSession = allSessions.find(s => s.endTime === bookingData.jam_selesai);
+                
+                if (startSession && endSession) {
+                    for (let i = startSession.id - 1; i < endSession.id; i++) {
+                        if (allSessions[i]) {
+                            sessionData.push(allSessions[i]);
+                        }
+                    }
+                }
+            }
+            
+            // Calculate hours and minutes
+            const hours = Math.floor(durationMinutes / 60);
+            const minutes = durationMinutes % 60;
+            
+            // Format session text
+            let sessionText = '';
+            if (sessionData.length > 0) {
+                const sessionIds = sessionData.map(s => `Sesi ${s.id}`);
+                sessionText = sessionIds.join(', ');
+            } else if (bookingData.jam_mulai && bookingData.jam_selesai) {
+                sessionText = `${bookingData.jam_mulai} - ${bookingData.jam_selesai}`;
+            } else {
+                sessionText = 'Tidak tersedia';
+            }
+            
+            // Format duration text
+            let durationText = '';
+            if (hours > 0) {
+                durationText = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
+            } else if (minutes > 0) {
+                durationText = `${minutes} menit`;
+            } else {
+                durationText = 'Tidak tersedia';
+            }
+            
+            // Update DOM elements
+            if (sessionElement) sessionElement.textContent = sessionText;
+            if (durationElement) durationElement.textContent = durationText;
+        });
+        
+        // Filter functionality
+        function filterTable() {
+            const filter = document.querySelector('.filter-select').value;
+            const cards = document.querySelectorAll('.booking-card');
+            
+            cards.forEach(card => {
+                if (filter === 'all' || card.dataset.status === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
         
         // Alert close functionality
         const alertCloseButtons = document.querySelectorAll('.alert-close');

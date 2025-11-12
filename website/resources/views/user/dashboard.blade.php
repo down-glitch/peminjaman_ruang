@@ -104,106 +104,10 @@
     </div>
 
     <!-- Stats Section -->
-    <div class="stats-grid">
-        <div class="stat-card warm">
-            <div class="stat-header">
-                <div class="stat-icon warm">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-            </div>
-            <div class="stat-value">12</div>
-            <div class="stat-label">Total Peminjaman</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i>
-                <span>23% dari bulan lalu</span>
-            </div>
-        </div>
 
-        <div class="stat-card teal">
-            <div class="stat-header">
-                <div class="stat-icon teal">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-            </div>
-            <div class="stat-value">8</div>
-            <div class="stat-label">Disetujui</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i>
-                <span>15% dari bulan lalu</span>
-            </div>
-        </div>
-
-        <div class="stat-card purple">
-            <div class="stat-header">
-                <div class="stat-icon purple">
-                    <i class="fas fa-hourglass-half"></i>
-                </div>
-            </div>
-            <div class="stat-value">3</div>
-            <div class="stat-label">Menunggu Persetujuan</div>
-            <div class="stat-change negative">
-                <i class="fas fa-arrow-down"></i>
-                <span>5% dari bulan lalu</span>
-            </div>
-        </div>
-
-        <div class="stat-card coral">
-            <div class="stat-header">
-                <div class="stat-icon coral">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-            </div>
-            <div class="stat-value">1</div>
-            <div class="stat-label">Ditolak</div>
-            <div class="stat-change positive">
-                <i class="fas fa-arrow-up"></i>
-                <span>0% dari bulan lalu</span>
-            </div>
-        </div>
-    </div>
 
     <!-- Recent Activity -->
-    <div class="recent-activity">
-        <div class="activity-header">
-            <h2 class="activity-title">Aktivitas Terbaru</h2>
-            <a href="{{ route('peminjaman.user') }}" class="activity-link">
-                Lihat Semua
-                <i class="fas fa-arrow-right"></i>
-            </a>
-        </div>
-        <div class="activity-list">
-            <div class="activity-item">
-                <div class="activity-icon approved">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-title">Peminjaman Ruang Meeting Disetujui</div>
-                    <div class="activity-desc">Peminjaman ruang meeting untuk tanggal 15 Juni 2023 telah disetujui</div>
-                    <div class="activity-time">2 jam yang lalu</div>
-                </div>
-            </div>
-            <div class="activity-item">
-                <div class="activity-icon pending">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-title">Pengajuan Peminjaman Baru</div>
-                    <div class="activity-desc">Pengajuan peminjaman ruang kelas untuk tanggal 20 Juni 2023</div>
-                    <div class="activity-time">1 hari yang lalu</div>
-                </div>
-            </div>
-            <div class="activity-item">
-                <div class="activity-icon completed">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-title">Peminjaman Selesai</div>
-                    <div class="activity-desc">Peminjaman ruang seminar pada tanggal 10 Juni 2023 telah selesai</div>
-                    <div class="activity-time">3 hari yang lalu</div>
-                </div>
-            </div>
-        </div>
-    </div>
+
 </div>
 
 <style>

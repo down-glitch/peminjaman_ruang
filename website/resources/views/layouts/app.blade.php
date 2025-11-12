@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'Dashboard')</title>
 
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -136,27 +142,6 @@
       --glass-bg: rgba(255, 255, 255, 0.7);
       --glass-border: rgba(255, 255, 255, 0.2);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-    }
-    
-    :root[data-theme="dark"] {
-      --bg-primary: #1A1814;
-      --bg-secondary: #221F1A;
-      --bg-tertiary: #2A2620;
-      --text-primary: #F5E6D3;
-      --text-secondary: #D4C4B0;
-      --text-tertiary: #A89986;
-      --text-quaternary: #7C6E5C;
-      --border-primary: #3A342C;
-      --border-secondary: #302A24;
-      --glass-bg: rgba(34, 31, 26, 0.7);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-      --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      --gradient-surface: linear-gradient(180deg, var(--glass-bg) 0%, rgba(34, 31, 26, 0.8) 100%);
     }
 
     * {
@@ -1225,62 +1210,6 @@
       color: var(--text-tertiary);
     }
 
-    /* Theme Toggle */
-    .theme-toggle {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--glass-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--glass-border);
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: var(--shadow-xl);
-      z-index: 999;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow: hidden;
-    }
-
-    .theme-toggle::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: var(--gradient-sunset);
-      opacity: 0.1;
-      animation: rotate 10s linear infinite;
-    }
-
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .theme-toggle:hover {
-      transform: scale(1.1) rotate(10deg);
-      box-shadow: var(--shadow-2xl);
-    }
-
-    .theme-icon {
-      font-size: 1.25rem;
-      position: relative;
-      z-index: 1;
-      transition: transform 0.3s ease;
-    }
-
-    .theme-toggle:hover .theme-icon {
-      transform: rotate(-10deg);
-    }
-
     /* Mobile Toggle */
     .mobile-menu-toggle {
       display: none;
@@ -1452,23 +1381,14 @@
   @endphp
 
   <div class="mobile-menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('active')">
-    <div class="nav-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </div>
+    <i class="fas fa-bars"></i>
   </div>
 
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <div class="logo-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
+          <i class="fas fa-door-open"></i>
         </div>
         <div>
           <h4>Peminjaman Ruang</h4>
@@ -1482,10 +1402,7 @@
         <div class="nav-section-title">Menu Utama</div>
         <a href="{{ $dashboardRoute }}" class="{{ str_contains($currentRoute, 'dashboard') ? 'active' : '' }}">
           <div class="nav-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
+            <i class="fas fa-home"></i>
           </div>
           Dashboard
         </a>
@@ -1493,22 +1410,13 @@
         @if($role === 'admin')
           <a href="{{ route('manajemen.user') }}" class="{{ str_contains($currentRoute, 'manajemen.user') ? 'active' : '' }}">
             <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
+              <i class="fas fa-users-cog"></i>
             </div>
             Manajemen User
           </a>
           <a href="{{ route('rooms.index') }}" class="{{ str_contains($currentRoute, 'rooms') ? 'active' : '' }}">
             <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="9" y1="9" x2="15" y2="9"></line>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-              </svg>
+              <i class="fas fa-door-closed"></i>
             </div>
             Manajemen Ruang
           </a>
@@ -1517,12 +1425,7 @@
         @if(in_array($role, ['admin', 'petugas']))
           <a href="{{ route('jadwal.index') }}" class="{{ str_contains($currentRoute, 'jadwal') ? 'active' : '' }}">
             <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
+              <i class="fas fa-calendar-alt"></i>
             </div>
             Jadwal Ruang
           </a>
@@ -1530,9 +1433,7 @@
 
         <a href="{{ $peminjamanRoute }}" class="{{ str_contains($currentRoute, 'peminjaman') ? 'active' : '' }}">
           <div class="nav-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
+            <i class="fas fa-calendar-check"></i>
           </div>
           Peminjaman
         </a>
@@ -1540,13 +1441,7 @@
         @if($laporanRoute !== '#')
           <a href="{{ $laporanRoute }}" class="{{ str_contains($currentRoute, 'laporan') ? 'active' : '' }}">
             <div class="nav-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
+              <i class="fas fa-chart-bar"></i>
             </div>
             Laporan
           </a>
@@ -1567,11 +1462,7 @@
       
       <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-link">
         <div class="nav-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
+          <i class="fas fa-sign-out-alt"></i>
         </div>
         Logout
       </a>
@@ -1588,39 +1479,9 @@
     </div>
   </div>
 
-  <div class="theme-toggle">
-    <div class="theme-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-      </svg>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const themeToggle = document.querySelector('.theme-toggle');
-      const icon = themeToggle.querySelector('.theme-icon');
-      const savedTheme = localStorage.getItem('theme') || 'light';
-
-      if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        icon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
-      }
-
-      themeToggle.addEventListener('click', () => {
-        const isDark = document.documentElement.hasAttribute('data-theme');
-        if (isDark) {
-          document.documentElement.removeAttribute('data-theme');
-          icon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-          localStorage.setItem('theme', 'light');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          icon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
-          localStorage.setItem('theme', 'dark');
-        }
-      });
-
       document.addEventListener('click', (e) => {
         const sidebar = document.querySelector('.sidebar');
         const toggle = document.querySelector('.mobile-menu-toggle');

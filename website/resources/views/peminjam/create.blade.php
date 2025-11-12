@@ -45,111 +45,59 @@
 
     {{-- Main Form --}}
     <div class="form-container">
-        <div class="form-progress">
-            <div class="progress-step active" data-step="1">
-                <div class="step-icon">
-                    <i class="fas fa-door-open"></i>
-                </div>
-                <div class="step-title">Pilih Ruangan</div>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step" data-step="2">
-                <div class="step-icon">
-                    <i class="fas fa-calendar"></i>
-                </div>
-                <div class="step-title">Tanggal & Waktu</div>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step" data-step="3">
-                <div class="step-icon">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div class="step-title">Keterangan</div>
-            </div>
-            <div class="progress-line"></div>
-            <div class="progress-step" data-step="4">
-                <div class="step-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="step-title">Selesai</div>
-            </div>
-        </div>
-
         <div class="form-card">
+            <!-- Remove type="submit" to prevent automatic submission -->
             <form action="{{ route('peminjaman.store') }}" method="POST" class="form-enhanced" id="bookingForm">
                 @csrf
                 
-                <!-- Step 1: Ruangan -->
-                <div class="form-step active" data-step="1">
-                    <div class="step-header">
-                        <h3><i class="fas fa-door-open"></i> Pilih Ruangan</h3>
-                        <p>Pilih ruangan yang ingin Anda pinjam</p>
+                <!-- Form Content -->
+                <div class="form-content">
+                    <div class="form-header">
+                        <h2>Formulir Peminjaman Ruangan</h2>
+                        <p>Lengkapi data berikut untuk mengajukan peminjaman ruangan</p>
                     </div>
                     
-                    <div class="room-selection">
-                        @foreach($rooms as $room)
-                            <div class="room-card {{ old('id_room') == $room->id_room ? 'selected' : '' }}" data-room-id="{{ $room->id_room }}">
-                                <div class="room-image">
-                                    <i class="fas fa-door-closed"></i>
-                                </div>
-                                <div class="room-info">
-                                    <h4>{{ $room->nama_room }}</h4>
-                                    <p><i class="fas fa-map-marker-alt"></i> {{ $room->lokasi }}</p>
-                                    <div class="room-details">
-                                        <span class="capacity"><i class="fas fa-users"></i> Kapasitas: {{ $room->kapasitas ?? '-' }} orang</span>
-                                    </div>
-                                </div>
-                                <div class="room-select">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
-                        @endforeach
+                    <!-- Room Selection -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-door-closed"></i>
+                            Ruangan
+                        </label>
+                        <div class="select-wrapper">
+                            <select name="id_room" class="form-select" id="selectedRoom" required>
+                                <option value="">-- Pilih Ruangan --</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->id_room }}" {{ old('id_room') == $room->id_room ? 'selected' : '' }}>
+                                        {{ $room->nama_room }} - {{ $room->lokasi }} (Kapasitas: {{ $room->kapasitas ?? '-' }} orang)
+                                    </option>
+                                @endforeach
+                            </select>
+                            <i class="select-icon fas fa-chevron-down"></i>
+                        </div>
                     </div>
-                    
-                    <input type="hidden" name="id_room" id="selectedRoom" value="{{ old('id_room') }}">
-                </div>
 
-                <!-- Step 2: Tanggal & Waktu -->
-                <div class="form-step" data-step="2">
-                    <div class="step-header">
-                        <h3><i class="fas fa-calendar"></i> Tanggal & Waktu</h3>
-                        <p>Pilih tanggal dan waktu peminjaman</p>
+                    <!-- Date Selection -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-calendar-day"></i>
+                            Tanggal Peminjaman
+                        </label>
+                        <div class="input-with-icon">
+                            <input type="date" name="tanggal" class="form-input" value="{{ old('tanggal') }}" required id="bookingDate">
+                            <i class="input-icon fas fa-calendar"></i>
+                        </div>
                     </div>
-                    
-                    <div class="datetime-container">
+
+                    <!-- Session Selection -->
+                    <div class="session-selection">
                         <div class="form-group">
                             <label class="form-label">
-                                <i class="fas fa-calendar-day"></i>
-                                Tanggal Peminjaman
+                                <i class="fas fa-clock"></i>
+                                Pilih Sesi
                             </label>
-                            <div class="input-with-icon">
-                                <input type="date" name="tanggal" class="form-input" value="{{ old('tanggal') }}" required id="bookingDate">
-                                <i class="input-icon fas fa-calendar"></i>
-                            </div>
-                            <div class="form-hint">Pilih tanggal ketika Anda akan menggunakan ruangan</div>
-                        </div>
-
-                        <div class="time-slots">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-clock"></i>
-                                    Jam Mulai
-                                </label>
-                                <div class="input-with-icon">
-                                    <input type="time" name="jam_mulai" class="form-input" value="{{ old('jam_mulai') }}" required id="startTime">
-                                    <i class="input-icon fas fa-clock"></i>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-clock"></i>
-                                    Jam Selesai
-                                </label>
-                                <div class="input-with-icon">
-                                    <input type="time" name="jam_selesai" class="form-input" value="{{ old('jam_selesai') }}" required id="endTime">
-                                    <i class="input-icon fas fa-clock"></i>
-                                </div>
+                            <div class="form-hint">Setiap sesi berdurasi 45 menit. Pilih sesi secara berurutan dari jam 07:00 hingga 15:15.</div>
+                            <div class="session-grid" id="sessionGrid">
+                                <!-- Sesi akan di-generate dengan JavaScript -->
                             </div>
                         </div>
                         
@@ -158,24 +106,18 @@
                                 <i class="fas fa-hourglass-half"></i>
                             </div>
                             <div class="duration-content">
-                                <div class="duration-label">Durasi Peminjaman</div>
-                                <div class="duration-value" id="durationText">0 jam 0 menit</div>
+                                <div class="duration-label">Durasi Total Peminjaman</div>
+                                <div class="duration-value" id="durationText">0 sesi (0 jam 0 menit)</div>
+                                <div class="session-times" id="sessionTimes">-</div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Step 3: Keterangan -->
-                <div class="form-step" data-step="3">
-                    <div class="step-header">
-                        <h3><i class="fas fa-edit"></i> Keterangan Kegiatan</h3>
-                        <p>Jelaskan tujuan peminjaman ruangan</p>
-                    </div>
-                    
+                    <!-- Description -->
                     <div class="form-group">
                         <label class="form-label">
                             <i class="fas fa-file-alt"></i>
-                            Keterangan
+                            Keterangan Kegiatan
                         </label>
                         <div class="textarea-container">
                             <textarea name="keterangan" class="form-input textarea" rows="4" placeholder="Jelaskan tujuan peminjaman ruangan..." id="keterangan">{{ old('keterangan') }}</textarea>
@@ -189,93 +131,26 @@
                         </div>
                     </div>
                     
-                    <div class="activity-type">
-                        <label class="form-label">
-                            <i class="fas fa-tags"></i>
-                            Jenis Kegiatan (Opsional)
-                        </label>
-                        <div class="activity-options">
-                            <div class="activity-option">
-                                <input type="radio" name="jenis_kegiatan" id="meeting" value="meeting">
-                                <label for="meeting" class="option-label">
-                                    <i class="fas fa-users"></i>
-                                    Meeting
-                                </label>
-                            </div>
-                            <div class="activity-option">
-                                <input type="radio" name="jenis_kegiatan" id="presentasi" value="presentasi">
-                                <label for="presentasi" class="option-label">
-                                    <i class="fas fa-presentation"></i>
-                                    Presentasi
-                                </label>
-                            </div>
-                            <div class="activity-option">
-                                <input type="radio" name="jenis_kegiatan" id="workshop" value="workshop">
-                                <label for="workshop" class="option-label">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    Workshop
-                                </label>
-                            </div>
-                            <div class="activity-option">
-                                <input type="radio" name="jenis_kegiatan" id="lainnya" value="lainnya">
-                                <label for="lainnya" class="option-label">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                    Lainnya
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Step 4: Konfirmasi -->
-                <div class="form-step" data-step="4">
-                    <div class="step-header">
-                        <h3><i class="fas fa-check-circle"></i> Konfirmasi Pengajuan</h3>
-                        <p>Periksa kembali detail peminjaman Anda</p>
-                    </div>
-                    
-                    <div class="confirmation-summary">
-                        <div class="summary-header">
-                            <div class="summary-icon">
-                                <i class="fas fa-clipboard-list"></i>
-                            </div>
-                            <h4>Ringkasan Peminjaman</h4>
-                        </div>
+                    <!-- Summary Section -->
+                    <div class="summary-section">
+                        <h3>Ringkasan Peminjaman</h3>
                         <div class="summary-content">
                             <div class="summary-item">
-                                <div class="summary-label">
-                                    <i class="fas fa-door-open"></i>
-                                    Ruangan
-                                </div>
+                                <div class="summary-label">Ruangan:</div>
                                 <div class="summary-value" id="summaryRoom">-</div>
                             </div>
                             <div class="summary-item">
-                                <div class="summary-label">
-                                    <i class="fas fa-calendar"></i>
-                                    Tanggal
-                                </div>
+                                <div class="summary-label">Tanggal:</div>
                                 <div class="summary-value" id="summaryDate">-</div>
                             </div>
                             <div class="summary-item">
-                                <div class="summary-label">
-                                    <i class="fas fa-clock"></i>
-                                    Waktu
-                                </div>
-                                <div class="summary-value" id="summaryTime">-</div>
+                                <div class="summary-label">Sesi:</div>
+                                <div class="summary-value" id="summarySession">-</div>
                             </div>
                             <div class="summary-item">
-                                <div class="summary-label">
-                                    <i class="fas fa-hourglass-half"></i>
-                                    Durasi
-                                </div>
+                                <div class="summary-label">Durasi:</div>
                                 <div class="summary-value" id="summaryDuration">-</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-label">
-                                    <i class="fas fa-file-alt"></i>
-                                    Keterangan
-                                </div>
-                                <div class="summary-value" id="summaryKeterangan">-</div>
                             </div>
                         </div>
                     </div>
@@ -286,17 +161,14 @@
                     </div>
                 </div>
 
-                <!-- Navigation Buttons -->
-                <div class="form-navigation">
-                    <button type="button" class="btn btn-outline" id="prevBtn" style="display: none;">
-                        <i class="fas fa-arrow-left"></i>
-                        Kembali
-                    </button>
-                    <button type="button" class="btn btn-primary" id="nextBtn">
-                        Lanjutkan
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
+                <!-- Hidden fields for session data -->
+                <input type="hidden" name="sesi_data" id="sesiData" value="">
+                <input type="hidden" name="jam_mulai" id="startTimeHidden" value="">
+                <input type="hidden" name="jam_selesai" id="endTimeHidden" value="">
+
+                <!-- Submit Button - Change to button type="button" -->
+                <div class="form-footer">
+                    <button type="button" class="btn btn-primary" id="submitBtn">
                         <i class="fas fa-paper-plane"></i>
                         Ajukan Peminjaman
                     </button>
@@ -326,6 +198,9 @@
         --purple-500: #A855F7;
         --coral-500: #F43F5E;
         --amber-500: #F59E0B;
+        --blue-500: #3B82F6;
+        --blue-700: #1D4ED8;
+        --teal-700: #0F766E;
         
         /* Theme Variables - Dipertahankan */
         --bg-primary: #FFFBF5;
@@ -353,20 +228,6 @@
         /* Glass Effect - Lebih Subtle */
         --glass-bg: rgba(255, 255, 255, 0.85);
         --glass-border: rgba(232, 225, 211, 0.4);
-    }
-    
-    :root[data-theme="dark"] {
-        --bg-primary: #1A1814;
-        --bg-secondary: #221F1A;
-        --bg-tertiary: #2A2620;
-        --text-primary: #F5E6D3;
-        --text-secondary: #D4C4B0;
-        --text-tertiary: #A89986;
-        --text-quaternary: #7C6E5C;
-        --border-primary: #3A342C;
-        --border-secondary: #302A24;
-        --glass-bg: rgba(34, 31, 26, 0.85);
-        --glass-border: rgba(58, 52, 44, 0.4);
     }
 
     /* Global Styles */
@@ -406,90 +267,11 @@
 
     /* Form Container */
     .form-container {
-        max-width: 1000px;
+        max-width: 700px;
         margin: 0 auto;
     }
 
-    /* Progress Steps - Enhanced */
-    .form-progress {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2.5rem;
-        position: relative;
-    }
-
-    .progress-step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 2;
-        width: 80px;
-        transition: all 0.3s ease;
-    }
-
-    .step-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: var(--glass-bg);
-        border: 2px solid var(--glass-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0.75rem;
-        transition: all 0.3s ease;
-        color: var(--text-tertiary);
-        font-size: 1.25rem;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .progress-step.active .step-icon {
-        background: var(--gradient-warm);
-        border-color: var(--warm-500);
-        color: white;
-        box-shadow: var(--shadow-glow);
-        transform: scale(1.05);
-    }
-
-    .progress-step.completed .step-icon {
-        background: var(--gradient-warm);
-        border-color: var(--warm-500);
-        color: white;
-    }
-
-    .step-title {
-        font-size: 0.75rem;
-        color: var(--text-tertiary);
-        text-align: center;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .progress-step.active .step-title {
-        color: var(--text-primary);
-        font-weight: 600;
-    }
-
-    .progress-step.completed .step-title {
-        color: var(--text-primary);
-    }
-
-    .progress-line {
-        flex: 1;
-        height: 3px;
-        background: var(--border-primary);
-        margin-top: 30px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .progress-step.completed ~ .progress-line {
-        background: var(--gradient-warm);
-    }
-
-    /* Form Card - Simplified but Professional */
+    /* Form Card - Simplified */
     .form-card {
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
@@ -499,172 +281,293 @@
         transition: all 0.3s ease;
     }
 
-    /* Form Steps */
-    .form-step {
-        display: none;
-        padding: 2.5rem;
-        animation: fadeIn 0.5s ease;
+    .form-content {
+        padding: 2rem;
     }
 
-    .form-step.active {
-        display: block;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .step-header {
+    .form-header {
         text-align: center;
-        margin-bottom: 2.5rem;
+        margin-bottom: 2rem;
     }
 
-    .step-header h3 {
+    .form-header h2 {
         font-size: 1.75rem;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
-    .step-header p {
+    .form-header p {
         color: var(--text-secondary);
         margin: 0;
-        font-size: 1rem;
     }
 
-    /* Room Selection - Enhanced */
-    .room-selection {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .room-card {
-        background: var(--glass-bg);
-        border: 2px solid var(--glass-border);
-        border-radius: 1.25rem;
-        padding: 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
+    /* Form Elements - Simplified */
+    .form-group {
+        margin-bottom: 1.5rem;
         position: relative;
-        overflow: hidden;
     }
 
-    .room-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: var(--gradient-warm);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .room-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-xl);
-        border-color: var(--warm-300);
-    }
-
-    .room-card:hover::before {
-        opacity: 0.7;
-    }
-
-    .room-card.selected {
-        border-color: var(--warm-500);
-        background: var(--gradient-warm-subtle);
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-glow);
-    }
-
-    .room-card.selected::before {
-        opacity: 1;
-    }
-
-    .room-card.selected .room-select {
-        opacity: 1;
-    }
-
-    .room-image {
-        width: 70px;
-        height: 70px;
-        background: var(--gradient-warm);
-        border-radius: 1rem;
+    .form-label {
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin-bottom: 1.25rem;
-        color: white;
-        font-size: 1.75rem;
-        box-shadow: var(--shadow-md);
-        transition: all 0.3s ease;
-    }
-
-    .room-card:hover .room-image {
-        transform: scale(1.05);
-    }
-
-    .room-info h4 {
-        font-size: 1.25rem;
+        gap: 0.5rem;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
-    .room-info p {
-        color: var(--text-secondary);
-        font-size: 0.95rem;
-        margin-bottom: 0.75rem;
+    .form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--border-primary);
+        border-radius: 0.75rem;
+        background: var(--glass-bg);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--warm-500);
+        box-shadow: 0 0 0 3px rgba(248, 212, 161, 0.2);
+    }
+
+    .textarea {
+        resize: vertical;
+        min-height: 120px;
+        padding-right: 80px;
+    }
+
+    /* Form Select - Enhanced */
+    .select-wrapper {
+        position: relative;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 0.875rem 3rem 0.875rem 1rem;
+        border: 2px solid var(--border-primary);
+        border-radius: 0.75rem;
+        background: var(--glass-bg);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: var(--warm-500);
+        box-shadow: 0 0 0 3px rgba(248, 212, 161, 0.2);
+    }
+
+    .select-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-tertiary);
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus + .select-icon {
+        color: var(--warm-500);
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-tertiary);
+        pointer-events: none;
+    }
+
+    .char-counter {
+        position: absolute;
+        bottom: 1rem;
+        right: 1rem;
+        font-size: 0.8rem;
+        color: var(--text-tertiary);
+        background: var(--glass-bg);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .form-hint {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-    }
-
-    .room-details {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
         color: var(--text-tertiary);
     }
 
-    .room-select {
+    /* Session Selection - New */
+    .session-selection {
+        margin-bottom: 1.5rem;
+    }
+
+    .session-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .session-item {
+        background: var(--glass-bg);
+        border: 2px solid var(--border-primary);
+        border-radius: 1rem;
+        padding: 1rem 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .session-item:hover {
+        border-color: var(--warm-300);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .session-item.selected {
+        background: var(--gradient-warm-subtle);
+        border-color: var(--warm-500);
+        color: var(--warm-700);
+        box-shadow: var(--shadow-md);
+    }
+
+    .session-item.selected::after {
+        content: '\f058';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        width: 36px;
-        height: 36px;
+        top: -8px;
+        right: -8px;
+        width: 24px;
+        height: 24px;
         background: var(--gradient-warm);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        opacity: 0;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-        box-shadow: var(--shadow-md);
+        font-size: 0.75rem;
+        box-shadow: var(--shadow-sm);
     }
 
-    /* Date & Time */
-    .datetime-container {
-        max-width: 700px;
-        margin: 0 auto;
+    .session-item.disabled {
+        background: rgba(189, 180, 165, 0.2);
+        border-color: var(--text-quaternary);
+        color: var(--text-quaternary);
+        cursor: not-allowed;
+        opacity: 0.6;
     }
 
-    .time-slots {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
+    .session-item.disabled:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: var(--text-quaternary);
+    }
+
+    .session-item.disabled::before {
+        content: '\f0c1';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 24px;
+        height: 24px;
+        background: var(--coral-500);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.75rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* Conflict Alert Styling */
+    .alert-message.conflict-error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 0.75rem;
+        padding: 1rem;
         margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .alert-message.conflict-error .alert-icon {
+        color: #ef4444;
+        font-size: 1.25rem;
+    }
+
+    .alert-message.conflict-error .alert-content {
+        flex: 1;
+    }
+
+    .alert-message.conflict-error .alert-title {
+        color: #ef4444;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+    }
+
+    .alert-message.conflict-error .error-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .alert-message.conflict-error .alert-close {
+        background: none;
+        border: none;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        padding: 0.25rem;
+        margin: -0.25rem -0.25rem -0.25rem 0;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease;
+    }
+
+    .alert-message.conflict-error .alert-close:hover {
+        background: rgba(189, 180, 165, 0.1);
+        color: var(--text-primary);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .session-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .session-time {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
     }
 
     .duration-display {
@@ -709,221 +612,91 @@
         color: var(--text-primary);
     }
 
-    /* Form Elements - Simplified */
-    .form-group {
-        margin-bottom: 2rem;
-        position: relative;
-    }
-
-    .form-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .form-input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 2px solid var(--border-primary);
-        border-radius: 0.75rem;
-        background: var(--glass-bg);
-        color: var(--text-primary);
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-input:focus {
-        outline: none;
-        border-color: var(--warm-500);
-        box-shadow: 0 0 0 3px rgba(248, 212, 161, 0.2);
-    }
-
-    .textarea {
-        resize: vertical;
-        min-height: 120px;
-        padding-right: 80px;
-    }
-
-    .input-with-icon {
-        position: relative;
-    }
-
-    .input-icon {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-tertiary);
-        pointer-events: none;
-    }
-
-    .char-counter {
-        position: absolute;
-        bottom: 1rem;
-        right: 1rem;
-        font-size: 0.8rem;
-        color: var(--text-tertiary);
-        background: var(--glass-bg);
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.5rem;
-    }
-
-    .form-hint {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-        font-size: 0.85rem;
-        color: var(--text-tertiary);
-    }
-
-    /* Activity Type */
-    .activity-type {
-        margin-top: 2rem;
-    }
-
-    .activity-options {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .activity-option {
-        position: relative;
-    }
-
-    .activity-option input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-    }
-
-    .option-label {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 1.25rem 0.75rem;
-        background: var(--glass-bg);
-        border: 2px solid var(--border-primary);
-        border-radius: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-        font-weight: 500;
+    .session-times {
+        font-size: 0.9rem;
         color: var(--text-secondary);
+        margin-top: 0.5rem;
     }
 
-    .option-label i {
-        font-size: 1.5rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .activity-option input[type="radio"]:checked + .option-label {
+    /* Summary Section */
+    .summary-section {
         background: var(--gradient-warm-subtle);
-        border-color: var(--warm-500);
-        color: var(--warm-700);
-        box-shadow: var(--shadow-md);
-    }
-
-    .option-label:hover {
-        border-color: var(--warm-300);
-        transform: translateY(-3px);
-    }
-
-    /* Confirmation */
-    .confirmation-summary {
-        background: var(--gradient-warm-subtle);
-        border-radius: 1.25rem;
-        padding: 0;
-        margin-bottom: 2rem;
-        overflow: hidden;
-        box-shadow: var(--shadow-md);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
         border: 1px solid var(--border-primary);
     }
 
-    .summary-header {
-        background: var(--gradient-warm);
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .summary-icon {
-        width: 50px;
-        height: 50px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.25rem;
-    }
-
-    .summary-header h4 {
-        color: white;
-        margin: 0;
+    .summary-section h3 {
         font-size: 1.25rem;
         font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .summary-section h3::before {
+        content: '\f075';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        color: var(--warm-600);
     }
 
     .summary-content {
-        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
     }
 
     .summary-item {
         display: flex;
-        justify-content: space-between;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--border-primary);
-    }
-
-    .summary-item:last-child {
-        border-bottom: none;
+        flex-direction: column;
+        gap: 0.25rem;
     }
 
     .summary-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
         font-weight: 600;
-        color: var(--text-primary);
+        color: var(--text-secondary);
+        font-size: 0.9rem;
     }
 
     .summary-value {
-        color: var(--text-secondary);
+        color: var(--text-primary);
         font-weight: 500;
-        text-align: right;
-        max-width: 60%;
     }
 
     .confirmation-note {
         display: flex;
         align-items: flex-start;
         gap: 0.75rem;
-        padding: 1.5rem;
+        padding: 1rem;
         background: var(--gradient-warm-subtle);
-        border-radius: 1rem;
+        border-radius: 0.75rem;
         border-left: 4px solid var(--warm-500);
+        margin-top: 1.5rem;
     }
 
     .confirmation-note i {
         color: var(--warm-600);
         margin-top: 0.2rem;
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
     .confirmation-note p {
         margin: 0;
         color: var(--text-primary);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         line-height: 1.5;
+    }
+
+    /* Form Footer */
+    .form-footer {
+        padding: 1.5rem 2rem;
+        background: var(--gradient-warm-subtle);
+        border-top: 1px solid var(--border-primary);
+        text-align: center;
     }
 
     /* Alert */
@@ -955,6 +728,18 @@
         color: var(--coral-700);
     }
 
+    .alert-message.info {
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        color: var(--blue-700);
+    }
+    
+    .alert-message.success {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: var(--teal-700);
+    }
+
     .alert-icon {
         width: 40px;
         height: 40px;
@@ -966,6 +751,11 @@
         color: white;
         flex-shrink: 0;
     }
+    
+    /* Ikon khusus untuk setiap tipe alert */
+    .alert-message.error .alert-icon { background: var(--coral-500); }
+    .alert-message.info .alert-icon { background: var(--blue-500); }
+    .alert-message.success .alert-icon { background: var(--teal-500); }
 
     .alert-content {
         flex: 1;
@@ -973,49 +763,55 @@
 
     .alert-title {
         font-weight: 600;
-        color: var(--coral-700);
         margin: 0 0 0.75rem 0;
         font-size: 1.1rem;
     }
+    
+    .alert-message.error .alert-title { color: var(--coral-700); }
+    .alert-message.info .alert-title { color: var(--blue-700); }
+    .alert-message.success .alert-title { color: var(--teal-700); }
 
     .error-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         margin-bottom: 0.5rem;
-        color: var(--coral-700);
     }
+    
+    .alert-message.error .error-item { color: var(--coral-700); }
+    .alert-message.info .error-item { color: var(--blue-700); }
+    .alert-message.success .error-item { color: var(--teal-700); }
 
     .alert-close {
         background: none;
         border: none;
-        color: var(--coral-500);
         font-size: 1.2rem;
         cursor: pointer;
         padding: 0.5rem;
         border-radius: 0.5rem;
         transition: all 0.2s ease;
     }
+    
+    .alert-message.error .alert-close { color: var(--coral-500); }
+    .alert-message.info .alert-close { color: var(--blue-500); }
+    .alert-message.success .alert-close { color: var(--teal-500); }
 
     .alert-close:hover {
         background: rgba(0, 0, 0, 0.1);
-        color: var(--coral-700);
     }
+    
+    .alert-message.error .alert-close:hover { color: var(--coral-700); }
+    .alert-message.info .alert-close:hover { color: var(--blue-700); }
+    .alert-message.success .alert-close:hover { color: var(--teal-700); }
 
-    /* Navigation Buttons */
-    .form-navigation {
-        display: flex;
-        justify-content: space-between;
-        padding: 1.5rem 2.5rem;
-        background: var(--gradient-warm-subtle);
-        border-top: 1px solid var(--border-primary);
-    }
 
+    /* Button */
     .btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
-        padding: 0.875rem 1.75rem;
+        padding: 0.875rem 2rem;
         border-radius: 0.75rem;
         font-weight: 600;
         text-decoration: none;
@@ -1023,7 +819,7 @@
         transition: all 0.3s ease;
         font-family: 'Inter', sans-serif;
         cursor: pointer;
-        font-size: 0.95rem;
+        font-size: 1rem;
         position: relative;
         overflow: hidden;
     }
@@ -1041,18 +837,6 @@
 
     .btn:hover::before {
         left: 100%;
-    }
-
-    .btn-outline {
-        background: transparent;
-        color: var(--text-primary);
-        border-color: var(--border-primary);
-    }
-
-    .btn-outline:hover {
-        background: var(--glass-bg);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
     }
 
     .btn-primary {
@@ -1075,48 +859,20 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
-        .form-progress {
-            margin-bottom: 1.5rem;
+        .form-container {
+            max-width: 100%;
         }
         
-        .progress-step {
-            width: 60px;
+        .form-content {
+            padding: 1.5rem;
         }
         
-        .step-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 1rem;
+        .session-grid {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
         
-        .step-title {
-            font-size: 0.65rem;
-        }
-        
-        .form-step {
-            padding: 1.5rem 1rem;
-        }
-        
-        .room-selection {
+        .summary-content {
             grid-template-columns: 1fr;
-        }
-        
-        .time-slots {
-            grid-template-columns: 1fr;
-        }
-        
-        .activity-options {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .form-navigation {
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .btn {
-            width: 100%;
-            justify-content: center;
         }
     }
 
@@ -1127,297 +883,636 @@
             gap: 0.5rem;
         }
         
-        .step-header h3 {
-            font-size: 1.25rem;
-        }
-        
-        .activity-options {
-            grid-template-columns: 1fr;
-        }
-        
-        .summary-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-        
-        .summary-value {
-            text-align: left;
-            max-width: 100%;
+        .session-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Form Step Navigation
-        const formSteps = document.querySelectorAll('.form-step');
-        const progressSteps = document.querySelectorAll('.progress-step');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        let currentStep = 1;
+document.addEventListener('DOMContentLoaded', function() {
+    // Set min date to today
+    const today = new Date().toISOString().split('T')[0];
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) {
+        dateInput.min = today;
+    }
+    
+    // Room Selection (Dropdown)
+    const roomSelect = document.getElementById('selectedRoom');
+    
+    // Session Generation and Selection
+    const sessionGrid = document.getElementById('sessionGrid');
+    const durationDisplay = document.getElementById('durationDisplay');
+    const durationText = document.getElementById('durationText');
+    const sessionTimes = document.getElementById('sessionTimes');
+    const sesiDataInput = document.getElementById('sesiData');
+    const startTimeHidden = document.getElementById('startTimeHidden');
+    const endTimeHidden = document.getElementById('endTimeHidden');
+    
+    // Store existing schedules for conflict checking
+    let existingSchedules = [];
+    let regularSchedules = [];
+    let isSubmitting = false;
+    
+    /**
+     * Get day name from date
+     */
+    function getDayName(dateStr) {
+        const date = new Date(dateStr);
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        return days[date.getDay()];
+    }
+    
+    /**
+     * Convert time string to minutes since midnight
+     */
+    function timeToMinutes(timeStr) {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+    
+    /**
+     * Check if two time ranges overlap
+     */
+    function timeRangesOverlap(start1, end1, start2, end2) {
+        const s1 = timeToMinutes(start1);
+        const e1 = timeToMinutes(end1);
+        const s2 = timeToMinutes(start2);
+        const e2 = timeToMinutes(end2);
         
-        // Set min date to today
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.querySelector('input[type="date"]');
-        if (dateInput) {
-            dateInput.min = today;
+        return (s1 < e2 && s2 < e1);
+    }
+    
+    /**
+     * Generate session options (7:00 to 15:15, 45 minutes each)
+     * Ensuring each session is exactly 45 minutes
+     */
+    function generateSessions() {
+        const sessions = [];
+        let startHour = 7;
+        let startMinute = 0;
+        
+        // Generate sessions from 7:00 to 15:15, each exactly 45 minutes
+        while (startHour < 15 || (startHour === 15 && startMinute === 0)) {
+            // Calculate end time (exactly 45 minutes after start time)
+            let endHour = startHour;
+            let endMinute = startMinute + 45;
+            
+            if (endMinute >= 60) {
+                endHour += Math.floor(endMinute / 60);
+                endMinute = endMinute % 60;
+            }
+            
+            const startTime = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
+            const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+            
+            sessions.push({
+                id: sessions.length + 1,
+                startTime: startTime,
+                endTime: endTime
+            });
+            
+            // Move to next session
+            startHour = endHour;
+            startMinute = endMinute;
         }
         
-        // Room Selection
-        const roomCards = document.querySelectorAll('.room-card');
-        const selectedRoomInput = document.getElementById('selectedRoom');
-        
-        roomCards.forEach(card => {
-            card.addEventListener('click', function() {
-                roomCards.forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedRoomInput.value = this.dataset.roomId;
-            });
-        });
-        
-        // Time Duration Calculation
-        const startTimeInput = document.getElementById('startTime');
-        const endTimeInput = document.getElementById('endTime');
-        const durationDisplay = document.getElementById('durationDisplay');
-        const durationText = document.getElementById('durationText');
-        
-        function calculateDuration() {
-            if (startTimeInput.value && endTimeInput.value) {
-                const start = new Date(`2000-01-01T${startTimeInput.value}`);
-                const end = new Date(`2000-01-01T${endTimeInput.value}`);
-                
-                if (end > start) {
-                    const diff = end - start;
-                    const hours = Math.floor(diff / 3600000);
-                    const minutes = Math.floor((diff % 3600000) / 60000);
+        return sessions;
+    }
+    
+    const sessions = generateSessions();
+    
+    /**
+     * Fetch existing schedules for selected date and room
+     * This function generates mock data for demonstration
+     * In a real application, this would be an API call to the server
+     */
+    function fetchExistingSchedules(date, roomId) {
+        return new Promise((resolve) => {
+            // First, fetch regular schedules based on day of the week
+            const dayName = getDayName(date);
+            
+            // Fetch regular schedules via API
+            fetch(`/api/jadwal-reguler/${roomId}/${dayName}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    regularSchedules = data;
                     
-                    durationText.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
-                    durationDisplay.style.display = 'flex';
-                } else {
-                    durationDisplay.style.display = 'none';
-                }
+                    // Generate some mock schedules for demonstration
+                    // This creates conflicts for today's date in room 1 and 2
+                    const mockSchedules = [];
+                    
+                    if (date === today) {
+                        if (roomId === "1") {
+                            // Add conflicts for room 1 today
+                            mockSchedules.push(
+                                { date: date, roomId: roomId, startTime: "09:00", endTime: "09:45" },
+                                { date: date, roomId: roomId, startTime: "11:00", endTime: "11:45" },
+                                { date: date, roomId: roomId, startTime: "13:00", endTime: "13:45" }
+                            );
+                        } else if (roomId === "2") {
+                            // Add conflicts for room 2 today
+                            mockSchedules.push(
+                                { date: date, roomId: roomId, startTime: "08:00", endTime: "08:45" },
+                                { date: date, roomId: roomId, startTime: "10:30", endTime: "11:15" },
+                                { date: date, roomId: roomId, startTime: "14:00", endTime: "14:45" }
+                            );
+                        }
+                    }
+                    
+                    existingSchedules = [...mockSchedules];
+                    resolve({ existingSchedules, regularSchedules });
+                })
+                .catch(error => {
+                    console.error('Error fetching regular schedules:', error);
+                    
+                    // Fallback to mock data if API call fails
+                    const mockSchedules = [];
+                    
+                    if (date === today) {
+                        if (roomId === "1") {
+                            mockSchedules.push(
+                                { date: date, roomId: roomId, startTime: "09:00", endTime: "09:45" },
+                                { date: date, roomId: roomId, startTime: "11:00", endTime: "11:45" },
+                                { date: date, roomId: roomId, startTime: "13:00", endTime: "13:45" }
+                            );
+                        } else if (roomId === "2") {
+                            mockSchedules.push(
+                                { date: date, roomId: roomId, startTime: "08:00", endTime: "08:45" },
+                                { date: date, roomId: roomId, startTime: "10:30", endTime: "11:15" },
+                                { date: date, roomId: roomId, startTime: "14:00", endTime: "14:45" }
+                            );
+                        }
+                    }
+                    
+                    existingSchedules = mockSchedules;
+                    regularSchedules = [];
+                    resolve({ existingSchedules, regularSchedules });
+                });
+        });
+    }
+    
+    /**
+     * Check if a session conflicts with existing schedules
+     */
+    function hasSessionConflict(session, schedules) {
+        return schedules.some(schedule => {
+            // Check if session time overlaps with any existing schedule
+            return timeRangesOverlap(
+                session.startTime, 
+                session.endTime, 
+                schedule.startTime || schedule.jam_mulai, 
+                schedule.endTime || schedule.jam_selesai
+            );
+        });
+    }
+    
+    /**
+     * Update session availability based on existing schedules
+     */
+    function updateSessionAvailability() {
+        const sessionItems = document.querySelectorAll('.session-item');
+        
+        sessionItems.forEach(item => {
+            const session = {
+                startTime: item.dataset.startTime,
+                endTime: item.dataset.endTime
+            };
+            
+            // Check if this session conflicts with any existing schedule
+            const hasConflict = hasSessionConflict(session, existingSchedules) || 
+                               hasSessionConflict(session, regularSchedules);
+            
+            if (hasConflict) {
+                item.classList.add('disabled');
+                item.classList.remove('selected');
+                item.title = 'Sesi ini tidak tersedia (sudah dipesan)';
             } else {
-                durationDisplay.style.display = 'none';
-            }
-        }
-        
-        // Add event listeners for date and time inputs
-        dateInput.addEventListener('change', function() {
-            calculateDuration();
-        });
-        
-        startTimeInput.addEventListener('change', calculateDuration);
-        endTimeInput.addEventListener('change', calculateDuration);
-        
-        // Character Counter
-        const keteranganTextarea = document.getElementById('keterangan');
-        const charCount = document.getElementById('charCount');
-        
-        keteranganTextarea.addEventListener('input', function() {
-            const count = this.value.length;
-            charCount.textContent = count;
-            
-            if (count > 500) {
-                this.value = this.value.substring(0, 500);
-                charCount.textContent = 500;
+                item.classList.remove('disabled');
+                item.title = '';
             }
         });
         
-        // Update Summary
-        function updateSummary() {
-            const selectedRoom = document.querySelector('.room-card.selected');
-            const summaryRoom = document.getElementById('summaryRoom');
-            const summaryDate = document.getElementById('summaryDate');
-            const summaryTime = document.getElementById('summaryTime');
-            const summaryDuration = document.getElementById('summaryDuration');
-            const summaryKeterangan = document.getElementById('summaryKeterangan');
-            
-            if (selectedRoom) {
-                summaryRoom.textContent = selectedRoom.querySelector('h4').textContent;
-            }
-            
-            if (dateInput.value) {
-                const date = new Date(dateInput.value);
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                summaryDate.textContent = date.toLocaleDateString('id-ID', options);
-            }
-            
-            if (startTimeInput.value && endTimeInput.value) {
-                summaryTime.textContent = `${startTimeInput.value} - ${endTimeInput.value}`;
-                
-                // Calculate duration for summary
-                const start = new Date(`2000-01-01T${startTimeInput.value}`);
-                const end = new Date(`2000-01-01T${endTimeInput.value}`);
-                
-                if (end > start) {
-                    const diff = end - start;
-                    const hours = Math.floor(diff / 3600000);
-                    const minutes = Math.floor((diff % 3600000) / 60000);
-                    
-                    summaryDuration.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
-                }
-            }
-            
-            if (keteranganTextarea.value) {
-                summaryKeterangan.textContent = keteranganTextarea.value;
-            }
-        }
+        // Update duration display if needed
+        updateDuration();
+    }
+    
+    // Render session options
+    function renderSessions() {
+        sessionGrid.innerHTML = '';
         
-        // Step Navigation
-        function showStep(step) {
-            formSteps.forEach(formStep => {
-                formStep.classList.remove('active');
-                if (parseInt(formStep.dataset.step) === step) {
-                    formStep.classList.add('active');
+        sessions.forEach(session => {
+            const sessionItem = document.createElement('div');
+            sessionItem.className = 'session-item';
+            sessionItem.dataset.sessionId = session.id;
+            sessionItem.dataset.startTime = session.startTime;
+            sessionItem.dataset.endTime = session.endTime;
+            
+            sessionItem.innerHTML = `
+                <div class="session-number">Sesi ${session.id}</div>
+                <div class="session-time">${session.startTime} - ${session.endTime}</div>
+            `;
+            
+            sessionItem.addEventListener('click', function() {
+                // Don't allow selection of disabled sessions
+                if (this.classList.contains('disabled')) {
+                    showNotification('Sesi ini sudah dipesan. Silakan pilih sesi lain.', 'error');
+                    return;
                 }
+                
+                toggleSessionSelection(this);
             });
             
-            progressSteps.forEach(progressStep => {
-                progressStep.classList.remove('active', 'completed');
-                const stepNum = parseInt(progressStep.dataset.step);
+            sessionGrid.appendChild(sessionItem);
+        });
+    }
+    
+    // Initialize sessions
+    renderSessions();
+    
+    /**
+     * Toggle session selection with consecutive logic (without notification)
+     */
+    function toggleSessionSelection(sessionElement) {
+        const allSessions = document.querySelectorAll('.session-item');
+        const selectedSessions = document.querySelectorAll('.session-item.selected');
+        const clickedId = parseInt(sessionElement.dataset.sessionId);
+
+        // If clicking an already selected session, deselect all.
+        if (sessionElement.classList.contains('selected')) {
+            allSessions.forEach(s => s.classList.remove('selected'));
+            updateDuration();
+            return;
+        }
+
+        // If no session is selected, select the clicked one.
+        if (selectedSessions.length === 0) {
+            sessionElement.classList.add('selected');
+            updateDuration();
+            return;
+        }
+        
+        // If sessions are already selected, check if the new one is consecutive.
+        const selectedIds = Array.from(selectedSessions).map(s => parseInt(s.dataset.sessionId));
+        const minId = Math.min(...selectedIds);
+        const maxId = Math.max(...selectedIds);
+
+        if (clickedId === minId - 1 || clickedId === maxId + 1) {
+            // If consecutive, add it to the selection.
+            sessionElement.classList.add('selected');
+        } else {
+            // If not consecutive, reset and start a new selection.
+            allSessions.forEach(s => s.classList.remove('selected'));
+            sessionElement.classList.add('selected');
+        }
+        
+        updateDuration();
+    }
+    
+    // Update duration display
+    function updateDuration() {
+        const selectedSessions = document.querySelectorAll('.session-item.selected');
+        
+        if (selectedSessions.length > 0) {
+            // Calculate total duration (each session is exactly 45 minutes)
+            const totalMinutes = selectedSessions.length * 45;
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            durationText.textContent = `${selectedSessions.length} sesi (${hours} jam ${minutes > 0 ? minutes + ' menit' : ''})`;
+            
+            // Get first and last session times
+            const firstSession = selectedSessions[0];
+            const lastSession = selectedSessions[selectedSessions.length - 1];
+            
+            sessionTimes.textContent = `${firstSession.dataset.startTime} - ${lastSession.dataset.endTime}`;
+            
+            // Update hidden fields
+            startTimeHidden.value = firstSession.dataset.startTime;
+            endTimeHidden.value = lastSession.dataset.endTime;
+            
+            // Create array of session data
+            const sessionDataArray = Array.from(selectedSessions).map(session => ({
+                id: session.dataset.sessionId,
+                startTime: session.dataset.startTime,
+                endTime: session.dataset.endTime
+            }));
+            
+            sesiDataInput.value = JSON.stringify(sessionDataArray);
+            
+            durationDisplay.style.display = 'flex';
+        } else {
+            durationDisplay.style.display = 'none';
+            startTimeHidden.value = '';
+            endTimeHidden.value = '';
+            sesiDataInput.value = '';
+        }
+    }
+    
+    // Character Counter
+    const keteranganTextarea = document.getElementById('keterangan');
+    const charCount = document.getElementById('charCount');
+    
+    keteranganTextarea.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = count;
+        
+        if (count > 500) {
+            this.value = this.value.substring(0, 500);
+            charCount.textContent = 500;
+        }
+    });
+    
+    // Update Summary
+    function updateSummary() {
+        const summaryRoom = document.getElementById('summaryRoom');
+        const summaryDate = document.getElementById('summaryDate');
+        const summarySession = document.getElementById('summarySession');
+        const summaryDuration = document.getElementById('summaryDuration');
+        
+        if (roomSelect.value) {
+            const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+            summaryRoom.textContent = selectedOption.text;
+        }
+        
+        if (dateInput.value) {
+            const date = new Date(dateInput.value);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            summaryDate.textContent = date.toLocaleDateString('id-ID', options);
+        }
+        
+        const selectedSessions = document.querySelectorAll('.session-item.selected');
+        if (selectedSessions.length > 0) {
+            const sessionIds = Array.from(selectedSessions).map(s => `Sesi ${s.dataset.sessionId}`);
+            summarySession.textContent = sessionIds.join(', ');
+            
+            // Calculate duration for summary (each session is exactly 45 minutes)
+            const totalMinutes = selectedSessions.length * 45;
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            
+            summaryDuration.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
+        } else {
+             summarySession.textContent = '-';
+             summaryDuration.textContent = '-';
+        }
+    }
+    
+    // Update summary when form values change
+    roomSelect.addEventListener('change', updateSummary);
+    dateInput.addEventListener('change', updateSummary);
+    keteranganTextarea.addEventListener('input', updateSummary);
+    
+    // Add event listener to update summary when session selection changes
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.session-item')) {
+            setTimeout(updateSummary, 100); // Small delay to ensure class is updated
+        }
+    });
+    
+    // Event listener for date and room selection changes
+    dateInput.addEventListener('change', function() {
+        if (this.value && roomSelect.value) {
+            fetchExistingSchedules(this.value, roomSelect.value)
+                .then(() => updateSessionAvailability());
+        }
+    });
+    
+    roomSelect.addEventListener('change', function() {
+        if (this.value && dateInput.value) {
+            fetchExistingSchedules(dateInput.value, this.value)
+                .then(() => updateSessionAvailability());
+        }
+    });
+    
+    // Form submission - COMPLETELY REWRITTEN
+    const form = document.getElementById('bookingForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    submitBtn.addEventListener('click', async function(e) {
+        e.preventDefault(); // ALWAYS prevent default first
+        e.stopPropagation();
+        
+        // Prevent multiple submissions
+        if (isSubmitting) {
+            return;
+        }
+        
+        isSubmitting = true;
+        
+        // Basic validation
+        if (!roomSelect.value) {
+            isSubmitting = false;
+            showNotification('Silakan pilih ruangan terlebih dahulu', 'error');
+            return;
+        }
+        
+        if (!dateInput.value) {
+            isSubmitting = false;
+            showNotification('Silakan pilih tanggal peminjaman', 'error');
+            return;
+        }
+        
+        if (document.querySelectorAll('.session-item.selected').length === 0) {
+            isSubmitting = false;
+            showNotification('Silakan pilih minimal satu sesi', 'error');
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memeriksa jadwal...';
+        
+        try {
+            // Fetch the latest schedules before validation
+            const { existingSchedules: latestExisting, regularSchedules: latestRegular } = 
+                await fetchExistingSchedules(dateInput.value, roomSelect.value);
+            
+            // Check for conflicts with existing schedules
+            const selectedSessions = document.querySelectorAll('.session-item.selected');
+            let hasConflict = false;
+            let conflictType = '';
+            let conflictingSchedule = null;
+            
+            for (const sessionItem of selectedSessions) {
+                const session = {
+                    startTime: sessionItem.dataset.startTime,
+                    endTime: sessionItem.dataset.endTime
+                };
                 
-                if (stepNum === step) {
-                    progressStep.classList.add('active');
-                } else if (stepNum < step) {
-                    progressStep.classList.add('completed');
+                // Check conflict with regular schedules first
+                for (const schedule of latestRegular) {
+                    if (timeRangesOverlap(
+                        session.startTime, 
+                        session.endTime, 
+                        schedule.jam_mulai, 
+                        schedule.jam_selesai
+                    )) {
+                        hasConflict = true;
+                        conflictType = 'reguler';
+                        conflictingSchedule = schedule;
+                        break;
+                    }
                 }
-            });
-            
-            // Update navigation buttons
-            prevBtn.style.display = step === 1 ? 'none' : 'flex';
-            nextBtn.style.display = step === 4 ? 'none' : 'flex';
-            submitBtn.style.display = step === 4 ? 'flex' : 'none';
-            
-            // Update summary when reaching confirmation step
-            if (step === 4) {
-                updateSummary();
-            }
-        }
-        
-        nextBtn.addEventListener('click', function() {
-            if (validateStep(currentStep)) {
-                currentStep++;
-                showStep(currentStep);
-            }
-        });
-        
-        prevBtn.addEventListener('click', function() {
-            currentStep--;
-            showStep(currentStep);
-        });
-        
-        function validateStep(step) {
-            let isValid = true;
-            
-            if (step === 1) {
-                if (!selectedRoomInput.value) {
-                    isValid = false;
-                    showNotification('Silakan pilih ruangan terlebih dahulu', 'error');
+                
+                if (!hasConflict) {
+                    // Check conflict with other schedules
+                    for (const schedule of latestExisting) {
+                        if (timeRangesOverlap(
+                            session.startTime, 
+                            session.endTime, 
+                            schedule.startTime, 
+                            schedule.endTime
+                        )) {
+                            hasConflict = true;
+                            conflictType = 'other';
+                            conflictingSchedule = schedule;
+                            break;
+                        }
+                    }
                 }
-            } else if (step === 2) {
-                if (!dateInput.value || !startTimeInput.value || !endTimeInput.value) {
-                    isValid = false;
-                    showNotification('Silakan lengkapi tanggal dan waktu peminjaman', 'error');
-                } else if (startTimeInput.value >= endTimeInput.value) {
-                    isValid = false;
-                    showNotification('Jam selesai harus lebih besar dari jam mulai', 'error');
-                }
+                
+                if (hasConflict) break;
             }
             
-            return isValid;
-        }
-        
-        // Form submission
-        const form = document.getElementById('bookingForm');
-        form.addEventListener('submit', function(e) {
-            submitBtn.disabled = true;
+            if (hasConflict) {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Ajukan Peminjaman';
+                
+                if (conflictType === 'reguler') {
+                    const dayName = getDayName(dateInput.value);
+                    showNotification(
+                        `Jadwal yang dipilih bentrok dengan jadwal reguler pada hari ${dayName} (${conflictingSchedule.jam_mulai} - ${conflictingSchedule.jam_selesai}). Silakan pilih sesi lain.`, 
+                        'error'
+                    );
+                } else {
+                    showNotification(
+                        `Jadwal yang dipilih bentrok dengan jadwal yang sudah ada (${conflictingSchedule.startTime} - ${conflictingSchedule.endTime}). Silakan pilih sesi lain.`, 
+                        'error'
+                    );
+                }
+                return;
+            }
+            
+            // If no conflicts, update button and submit form
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengajukan...';
-        });
-        
-        // Alert close functionality
-        const alertCloseButtons = document.querySelectorAll('.alert-close');
-        
-        alertCloseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const alertMessage = this.closest('.alert-message');
-                alertMessage.style.animation = 'slideUp 0.3s ease-out forwards';
-                
-                setTimeout(() => {
-                    alertMessage.remove();
-                }, 300);
-            });
-        });
-        
-        // Auto-hide error messages after 10 seconds
-        const errorAlerts = document.querySelectorAll('.alert-message.error');
-        errorAlerts.forEach(alert => {
+            
+            // Use setTimeout to ensure UI updates before submission
             setTimeout(() => {
+                form.submit();
+            }, 500);
+            
+        } catch (error) {
+            console.error('Error checking conflicts:', error);
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Ajukan Peminjaman';
+            showNotification('Terjadi kesalahan saat memvalidasi jadwal. Silakan coba lagi.', 'error');
+        }
+    });
+    
+    // Alert close functionality
+    const alertCloseButtons = document.querySelectorAll('.alert-close');
+    
+    alertCloseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const alertMessage = this.closest('.alert-message');
+            alertMessage.style.animation = 'slideUp 0.3s ease-out forwards';
+            
+            setTimeout(() => {
+                alertMessage.remove();
+            }, 300);
+        });
+    });
+    
+    // Auto-hide error messages after 10 seconds
+    const errorAlerts = document.querySelectorAll('.alert-message.error');
+    errorAlerts.forEach(alert => {
+        setTimeout(() => {
+            if(alert.parentNode) { // Check if element still exists
                 alert.style.animation = 'slideUp 0.3s ease-out forwards';
-                
                 setTimeout(() => {
                     alert.remove();
                 }, 300);
-            }, 10000);
+            }
+        }, 10000);
+    });
+    
+    /**
+     * Show notification function with support for 'info' type
+     */
+    function showNotification(message, type = 'info') {
+        // Remove existing temporary notifications to avoid stacking
+        document.querySelectorAll('.alert-message.info, .alert-message.success').forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `alert-message ${type} fade-in`;
+        
+        const iconMap = {
+            'error': 'exclamation-triangle',
+            'info': 'info-circle',
+            'success': 'check-circle'
+        };
+
+        notification.innerHTML = `
+            <div class="alert-icon">
+                <i class="fas fa-${iconMap[type]}"></i>
+            </div>
+            <div class="alert-content">
+                <div class="error-item">
+                    <i class="fas fa-${iconMap[type]}"></i>
+                    <span>${message}</span>
+                </div>
+            </div>
+            <button type="button" class="alert-close">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        
+        document.querySelector('.form-container').prepend(notification);
+        
+        // Add close functionality
+        const closeBtn = notification.querySelector('.alert-close');
+        closeBtn.addEventListener('click', function() {
+            notification.style.animation = 'slideUp 0.3s ease-out forwards';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
         });
         
-        // Show notification function
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `alert-message ${type} fade-in`;
-            notification.innerHTML = `
-                <div class="alert-icon">
-                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
-                </div>
-                <div class="alert-content">
-                    <div class="error-item">
-                        <i class="fas fa-${type === 'error' ? 'times-circle' : 'check-circle'}"></i>
-                        <span>${message}</span>
-                    </div>
-                </div>
-                <button type="button" class="alert-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            document.querySelector('.form-container').prepend(notification);
-            
-            // Add close functionality
-            const closeBtn = notification.querySelector('.alert-close');
-            closeBtn.addEventListener('click', function() {
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if(notification.parentNode) {
                 notification.style.animation = 'slideUp 0.3s ease-out forwards';
-                
                 setTimeout(() => {
                     notification.remove();
                 }, 300);
-            });
-            
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideUp 0.3s ease-out forwards';
-                
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 5000);
-        }
-        
-        // Add slide up animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideUp {
-                from {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
             }
-        `;
-        document.head.appendChild(style);
-    });
+        }, 5000);
+    }
+    
+    // Add slide up animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+});
 </script>
 @endsection

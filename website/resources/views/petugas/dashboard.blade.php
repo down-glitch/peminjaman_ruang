@@ -9,32 +9,32 @@
         <h1 class="welcome-title">
             Selamat Datang, <span>{{ Auth::user()->name }}</span> 👋
         </h1>
-        <p class="welcome-subtitle">Berikut ringkasan aktivitas terbaru dalam sistem peminjaman ruang:</p>
+        <p class="welcome-subtitle">Kelola peminjaman ruang dengan mudah dan efisien</p>
     </div>
 
     <!-- Quick Actions -->
     <div class="quick-actions">
-        <h2 class="section-title">Aksi Cepat</h2>
+        <h2 class="section-title">Menu Utama</h2>
         <div class="actions-grid">
             <a href="{{ route('jadwal.index') }}" class="action-card">
                 <div class="action-icon">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
-                <h4>Lihat Jadwal</h4>
+                <h4>Jadwal</h4>
             </a>
             
             <a href="{{ route('peminjaman.index') }}" class="action-card">
                 <div class="action-icon">
                     <i class="fas fa-list"></i>
                 </div>
-                <h4>Daftar Peminjaman</h4>
+                <h4>Peminjaman</h4>
             </a>
             
             <a href="{{ route('laporan.index') }}" class="action-card">
                 <div class="action-icon">
                     <i class="fas fa-chart-bar"></i>
                 </div>
-                <h4>Lihat Laporan</h4>
+                <h4>Laporan</h4>
             </a>
         </div>
     </div>
@@ -43,33 +43,34 @@
 <style>
     /* Dashboard Container */
     .dashboard-container {
-        max-width: 1200px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 2rem;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     /* Welcome Section */
     .welcome-section {
-        margin-bottom: 3rem;
         text-align: center;
+        margin-bottom: 3rem;
     }
 
     .welcome-title {
         font-size: 2.5rem;
         font-weight: 700;
-        color: var(--text);
+        color: #1F2937; /* --text */
         margin-bottom: 1rem;
+        line-height: 1.2;
     }
 
     .welcome-title span {
-        color: var(--accent);
+        color: #3B82F6; /* --primary */
     }
 
     .welcome-subtitle {
         font-size: 1.1rem;
-        color: var(--text);
-        opacity: 0.8;
-        max-width: 600px;
+        color: #6B7280; /* Warna abu-abu untuk subtitle */
+        max-width: 500px;
         margin: 0 auto;
     }
 
@@ -79,24 +80,23 @@
     }
 
     .section-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 600;
-        color: var(--text);
+        color: #1F2937; /* --text */
         margin-bottom: 2rem;
-        position: relative;
-        padding-left: 0.75rem;
         text-align: center;
+        position: relative;
     }
 
-    .section-title::before {
+    .section-title::after {
         content: '';
         position: absolute;
+        bottom: -10px;
         left: 50%;
         transform: translateX(-50%);
-        top: -10px;
         width: 60px;
-        height: 4px;
-        background: var(--accent);
+        height: 3px;
+        background: #3B82F6; /* --primary */
         border-radius: 2px;
     }
 
@@ -104,59 +104,48 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
-        max-width: 900px;
+        max-width: 800px;
         margin: 0 auto;
     }
 
     .action-card {
-        background: var(--card-bg);
-        border-radius: 16px;
+        background: #FFFFFF; /* --card-bg */
+        border-radius: 12px;
         padding: 2.5rem 1.5rem;
         text-decoration: none;
-        color: var(--text);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        color: #1F2937; /* --text */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
         transition: all 0.3s ease;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .action-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 5px;
-        background: var(--primary);
+        border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .action-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: #3B82F6; /* --primary */
     }
 
     .action-icon {
-        width: 80px;
-        height: 80px;
-        background: var(--primary);
+        width: 70px;
+        height: 70px;
+        background: #3B82F6; /* --primary */
         color: white;
-        border-radius: 16px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
+        font-size: 1.8rem;
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
     }
 
     .action-card:hover .action-icon {
-        transform: scale(1.1);
-        background: var(--accent);
+        background: #2563EB; /* Warna aksen yang sedikit lebih gelap */
+        transform: scale(1.05);
     }
 
     .action-card h4 {
@@ -180,8 +169,7 @@
         }
 
         .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
         }
 
         .actions-grid {
@@ -194,9 +182,19 @@
         }
 
         .action-icon {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-title {
             font-size: 1.8rem;
+        }
+
+        .actions-grid {
+            gap: 1rem;
         }
     }
 </style>

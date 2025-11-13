@@ -38,6 +38,9 @@ class LoginController extends Controller
     // LOGIN
     public function login(Request $request)
     {
+
+dd($request->all());
+
         $request->validate([
             'login'    => 'required|string',
             'password' => 'required|string',

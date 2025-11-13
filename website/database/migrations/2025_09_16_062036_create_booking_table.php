@@ -15,7 +15,7 @@ return new class extends Migration
             $table->date('tanggal');                 // tanggal booking
             $table->time('jam_mulai');               // jam mulai
             $table->time('jam_selesai');             // jam selesai
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'cancel'])->default('pending');
             $table->text('keterangan')->nullable();  // opsional
             $table->timestamps();
 

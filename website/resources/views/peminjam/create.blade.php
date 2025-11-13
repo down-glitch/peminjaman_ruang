@@ -88,8 +88,42 @@
                         </div>
                     </div>
 
+                    <!-- Time Selection Mode -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-clock"></i>
+                            Mode Pemilihan Waktu
+                        </label>
+                        <div class="time-mode-selector">
+                            <div class="mode-option">
+                                <input type="radio" id="sessionMode" name="timeMode" value="session" checked>
+                                <label for="sessionMode" class="mode-label">
+                                    <div class="mode-icon">
+                                        <i class="fas fa-th-large"></i>
+                                    </div>
+                                    <div class="mode-text">
+                                        <h4>Sesi Tetap</h4>
+                                        <p>Pilih dari sesi yang tersedia (07:00 - 15:15)</p>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="mode-option">
+                                <input type="radio" id="customMode" name="timeMode" value="custom">
+                                <label for="customMode" class="mode-label">
+                                    <div class="mode-icon">
+                                        <i class="fas fa-user-clock"></i>
+                                    </div>
+                                    <div class="mode-text">
+                                        <h4>Waktu Kustom</h4>
+                                        <p>Tentukan waktu sendiri di luar jam operasional</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Session Selection -->
-                    <div class="session-selection">
+                    <div class="session-selection" id="sessionSelection">
                         <div class="form-group">
                             <label class="form-label">
                                 <i class="fas fa-clock"></i>
@@ -109,6 +143,36 @@
                                 <div class="duration-label">Durasi Total Peminjaman</div>
                                 <div class="duration-value" id="durationText">0 sesi (0 jam 0 menit)</div>
                                 <div class="session-times" id="sessionTimes">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Time Selection -->
+                    <div class="custom-time-selection" id="customTimeSelection" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-clock"></i>
+                                Waktu Kustom
+                            </label>
+                            <div class="form-hint">Pilih waktu mulai dan selesai di luar jam operasional (07:00 - 15:15).</div>
+                            <div class="custom-time-inputs">
+                                <div class="time-input-group">
+                                    <label for="customStartTime">Waktu Mulai</label>
+                                    <input type="time" id="customStartTime" name="customStartTime" class="form-input">
+                                </div>
+                                <div class="time-input-group">
+                                    <label for="customEndTime">Waktu Selesai</label>
+                                    <input type="time" id="customEndTime" name="customEndTime" class="form-input">
+                                </div>
+                            </div>
+                            <div class="custom-duration-display" id="customDurationDisplay" style="display: none;">
+                                <div class="duration-icon">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <div class="duration-content">
+                                    <div class="duration-label">Durasi Total Peminjaman</div>
+                                    <div class="duration-value" id="customDurationText">0 jam 0 menit</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,8 +209,16 @@
                                 <div class="summary-value" id="summaryDate">-</div>
                             </div>
                             <div class="summary-item">
+                                <div class="summary-label">Mode Waktu:</div>
+                                <div class="summary-value" id="summaryTimeMode">-</div>
+                            </div>
+                            <div class="summary-item" id="summarySessionItem">
                                 <div class="summary-label">Sesi:</div>
                                 <div class="summary-value" id="summarySession">-</div>
+                            </div>
+                            <div class="summary-item" id="summaryCustomTimeItem" style="display: none;">
+                                <div class="summary-label">Waktu:</div>
+                                <div class="summary-value" id="summaryCustomTime">-</div>
                             </div>
                             <div class="summary-item">
                                 <div class="summary-label">Durasi:</div>
@@ -165,6 +237,7 @@
                 <input type="hidden" name="sesi_data" id="sesiData" value="">
                 <input type="hidden" name="jam_mulai" id="startTimeHidden" value="">
                 <input type="hidden" name="jam_selesai" id="endTimeHidden" value="">
+                <input type="hidden" name="time_mode" id="timeModeHidden" value="session">
 
                 <!-- Submit Button - Change to button type="button" -->
                 <div class="form-footer">
@@ -413,6 +486,74 @@
         color: var(--text-tertiary);
     }
 
+    /* Time Mode Selector - New */
+    .time-mode-selector {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mode-option {
+        position: relative;
+    }
+
+    .mode-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .mode-label {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 2px solid var(--border-primary);
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .mode-option input[type="radio"]:checked + .mode-label {
+        border-color: var(--warm-500);
+        background: var(--gradient-warm-subtle);
+    }
+
+    .mode-label:hover {
+        border-color: var(--warm-300);
+    }
+
+    .mode-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--gradient-warm-subtle);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--warm-600);
+        font-size: 1.25rem;
+    }
+
+    .mode-option input[type="radio"]:checked + .mode-label .mode-icon {
+        background: var(--gradient-warm);
+        color: white;
+    }
+
+    .mode-text h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .mode-text p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
     /* Session Selection - New */
     .session-selection {
         margin-bottom: 1.5rem;
@@ -499,6 +640,47 @@
         color: white;
         font-size: 0.75rem;
         box-shadow: var(--shadow-sm);
+    }
+
+    /* Custom Time Selection - New */
+    .custom-time-selection {
+        margin-bottom: 1.5rem;
+    }
+
+    .custom-time-inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .time-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .time-input-group label {
+        font-weight: 500;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .custom-duration-display {
+        background: var(--gradient-warm-subtle);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid var(--border-primary);
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+    }
+
+    .custom-duration-display:hover {
+        box-shadow: var(--shadow-md);
     }
 
     /* Conflict Alert Styling */
@@ -871,6 +1053,10 @@
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
         
+        .custom-time-inputs {
+            grid-template-columns: 1fr;
+        }
+        
         .summary-content {
             grid-template-columns: 1fr;
         }
@@ -885,6 +1071,12 @@
         
         .session-grid {
             grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .mode-label {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
         }
     }
 </style>
@@ -901,6 +1093,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Room Selection (Dropdown)
     const roomSelect = document.getElementById('selectedRoom');
     
+    // Time Mode Selection
+    const sessionMode = document.getElementById('sessionMode');
+    const customMode = document.getElementById('customMode');
+    const sessionSelection = document.getElementById('sessionSelection');
+    const customTimeSelection = document.getElementById('customTimeSelection');
+    const timeModeHidden = document.getElementById('timeModeHidden');
+    
     // Session Generation and Selection
     const sessionGrid = document.getElementById('sessionGrid');
     const durationDisplay = document.getElementById('durationDisplay');
@@ -909,6 +1108,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const sesiDataInput = document.getElementById('sesiData');
     const startTimeHidden = document.getElementById('startTimeHidden');
     const endTimeHidden = document.getElementById('endTimeHidden');
+    
+    // Custom Time Selection
+    const customStartTime = document.getElementById('customStartTime');
+    const customEndTime = document.getElementById('customEndTime');
+    const customDurationDisplay = document.getElementById('customDurationDisplay');
+    const customDurationText = document.getElementById('customDurationText');
     
     // Store existing schedules for conflict checking
     let existingSchedules = [];
@@ -933,6 +1138,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
+     * Convert minutes since midnight to time string
+     */
+    function minutesToTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    }
+    
+    /**
      * Check if two time ranges overlap
      */
     function timeRangesOverlap(start1, end1, start2, end2) {
@@ -942,6 +1156,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const e2 = timeToMinutes(end2);
         
         return (s1 < e2 && s2 < e1);
+    }
+    
+    /**
+     * Check if time is within operational hours (7:00 - 15:15)
+     */
+    function isWithinOperationalHours(timeStr) {
+        const minutes = timeToMinutes(timeStr);
+        const operationalStart = timeToMinutes('07:00');
+        const operationalEnd = timeToMinutes('15:15');
+        
+        return minutes >= operationalStart && minutes <= operationalEnd;
     }
     
     /**
@@ -1215,6 +1440,32 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Update custom duration display
+    function updateCustomDuration() {
+        if (customStartTime.value && customEndTime.value) {
+            const startMinutes = timeToMinutes(customStartTime.value);
+            const endMinutes = timeToMinutes(customEndTime.value);
+            
+            if (endMinutes > startMinutes) {
+                const totalMinutes = endMinutes - startMinutes;
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                
+                customDurationText.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
+                customDurationDisplay.style.display = 'flex';
+                
+                // Update hidden fields
+                startTimeHidden.value = customStartTime.value;
+                endTimeHidden.value = customEndTime.value;
+            } else {
+                customDurationDisplay.style.display = 'none';
+                showNotification('Waktu selesai harus setelah waktu mulai', 'error');
+            }
+        } else {
+            customDurationDisplay.style.display = 'none';
+        }
+    }
+    
     // Character Counter
     const keteranganTextarea = document.getElementById('keterangan');
     const charCount = document.getElementById('charCount');
@@ -1233,7 +1484,11 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSummary() {
         const summaryRoom = document.getElementById('summaryRoom');
         const summaryDate = document.getElementById('summaryDate');
+        const summaryTimeMode = document.getElementById('summaryTimeMode');
         const summarySession = document.getElementById('summarySession');
+        const summarySessionItem = document.getElementById('summarySessionItem');
+        const summaryCustomTime = document.getElementById('summaryCustomTime');
+        const summaryCustomTimeItem = document.getElementById('summaryCustomTimeItem');
         const summaryDuration = document.getElementById('summaryDuration');
         
         if (roomSelect.value) {
@@ -1247,22 +1502,90 @@ document.addEventListener('DOMContentLoaded', function() {
             summaryDate.textContent = date.toLocaleDateString('id-ID', options);
         }
         
-        const selectedSessions = document.querySelectorAll('.session-item.selected');
-        if (selectedSessions.length > 0) {
-            const sessionIds = Array.from(selectedSessions).map(s => `Sesi ${s.dataset.sessionId}`);
-            summarySession.textContent = sessionIds.join(', ');
+        // Update time mode summary
+        if (sessionMode.checked) {
+            summaryTimeMode.textContent = 'Sesi Tetap';
+            summarySessionItem.style.display = 'flex';
+            summaryCustomTimeItem.style.display = 'none';
             
-            // Calculate duration for summary (each session is exactly 45 minutes)
-            const totalMinutes = selectedSessions.length * 45;
-            const hours = Math.floor(totalMinutes / 60);
-            const minutes = totalMinutes % 60;
-            
-            summaryDuration.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
+            const selectedSessions = document.querySelectorAll('.session-item.selected');
+            if (selectedSessions.length > 0) {
+                const sessionIds = Array.from(selectedSessions).map(s => `Sesi ${s.dataset.sessionId}`);
+                summarySession.textContent = sessionIds.join(', ');
+                
+                // Calculate duration for summary (each session is exactly 45 minutes)
+                const totalMinutes = selectedSessions.length * 45;
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                
+                summaryDuration.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
+            } else {
+                 summarySession.textContent = '-';
+                 summaryDuration.textContent = '-';
+            }
         } else {
-             summarySession.textContent = '-';
-             summaryDuration.textContent = '-';
+            summaryTimeMode.textContent = 'Waktu Kustom';
+            summarySessionItem.style.display = 'none';
+            summaryCustomTimeItem.style.display = 'flex';
+            
+            if (customStartTime.value && customEndTime.value) {
+                summaryCustomTime.textContent = `${customStartTime.value} - ${customEndTime.value}`;
+                
+                const startMinutes = timeToMinutes(customStartTime.value);
+                const endMinutes = timeToMinutes(customEndTime.value);
+                const totalMinutes = endMinutes - startMinutes;
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                
+                summaryDuration.textContent = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
+            } else {
+                summaryCustomTime.textContent = '-';
+                summaryDuration.textContent = '-';
+            }
         }
     }
+    
+    // Event listeners for time mode selection
+    sessionMode.addEventListener('change', function() {
+        if (this.checked) {
+            sessionSelection.style.display = 'block';
+            customTimeSelection.style.display = 'none';
+            timeModeHidden.value = 'session';
+            updateSummary();
+        }
+    });
+    
+    customMode.addEventListener('change', function() {
+        if (this.checked) {
+            sessionSelection.style.display = 'none';
+            customTimeSelection.style.display = 'block';
+            timeModeHidden.value = 'custom';
+            updateSummary();
+        }
+    });
+    
+    // Event listeners for custom time inputs
+    customStartTime.addEventListener('change', function() {
+        // Validate that start time is outside operational hours
+        if (isWithinOperationalHours(this.value)) {
+            showNotification('Waktu mulai harus di luar jam operasional (07:00 - 15:15)', 'error');
+            this.value = '';
+            return;
+        }
+        updateCustomDuration();
+        updateSummary();
+    });
+    
+    customEndTime.addEventListener('change', function() {
+        // Validate that end time is outside operational hours
+        if (isWithinOperationalHours(this.value)) {
+            showNotification('Waktu selesai harus di luar jam operasional (07:00 - 15:15)', 'error');
+            this.value = '';
+            return;
+        }
+        updateCustomDuration();
+        updateSummary();
+    });
     
     // Update summary when form values change
     roomSelect.addEventListener('change', updateSummary);
@@ -1319,10 +1642,25 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        if (document.querySelectorAll('.session-item.selected').length === 0) {
-            isSubmitting = false;
-            showNotification('Silakan pilih minimal satu sesi', 'error');
-            return;
+        // Validate based on time mode
+        if (sessionMode.checked) {
+            if (document.querySelectorAll('.session-item.selected').length === 0) {
+                isSubmitting = false;
+                showNotification('Silakan pilih minimal satu sesi', 'error');
+                return;
+            }
+        } else {
+            if (!customStartTime.value || !customEndTime.value) {
+                isSubmitting = false;
+                showNotification('Silakan pilih waktu mulai dan selesai', 'error');
+                return;
+            }
+            
+            if (timeToMinutes(customStartTime.value) >= timeToMinutes(customEndTime.value)) {
+                isSubmitting = false;
+                showNotification('Waktu selesai harus setelah waktu mulai', 'error');
+                return;
+            }
         }
         
         // Show loading state
@@ -1334,23 +1672,66 @@ document.addEventListener('DOMContentLoaded', function() {
             const { existingSchedules: latestExisting, regularSchedules: latestRegular } = 
                 await fetchExistingSchedules(dateInput.value, roomSelect.value);
             
-            // Check for conflicts with existing schedules
-            const selectedSessions = document.querySelectorAll('.session-item.selected');
             let hasConflict = false;
             let conflictType = '';
             let conflictingSchedule = null;
             
-            for (const sessionItem of selectedSessions) {
-                const session = {
-                    startTime: sessionItem.dataset.startTime,
-                    endTime: sessionItem.dataset.endTime
+            if (sessionMode.checked) {
+                // Check for conflicts with existing schedules for selected sessions
+                const selectedSessions = document.querySelectorAll('.session-item.selected');
+                
+                for (const sessionItem of selectedSessions) {
+                    const session = {
+                        startTime: sessionItem.dataset.startTime,
+                        endTime: sessionItem.dataset.endTime
+                    };
+                    
+                    // Check conflict with regular schedules first
+                    for (const schedule of latestRegular) {
+                        if (timeRangesOverlap(
+                            session.startTime, 
+                            session.endTime, 
+                            schedule.jam_mulai, 
+                            schedule.jam_selesai
+                        )) {
+                            hasConflict = true;
+                            conflictType = 'reguler';
+                            conflictingSchedule = schedule;
+                            break;
+                        }
+                    }
+                    
+                    if (!hasConflict) {
+                        // Check conflict with other schedules
+                        for (const schedule of latestExisting) {
+                            if (timeRangesOverlap(
+                                session.startTime, 
+                                session.endTime, 
+                                schedule.startTime, 
+                                schedule.endTime
+                            )) {
+                                hasConflict = true;
+                                conflictType = 'other';
+                                conflictingSchedule = schedule;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (hasConflict) break;
+                }
+            } else {
+                // Check for conflicts with custom time selection
+                const customTime = {
+                    startTime: customStartTime.value,
+                    endTime: customEndTime.value
                 };
                 
                 // Check conflict with regular schedules first
                 for (const schedule of latestRegular) {
                     if (timeRangesOverlap(
-                        session.startTime, 
-                        session.endTime, 
+                        customTime.startTime, 
+                        customTime.endTime, 
                         schedule.jam_mulai, 
                         schedule.jam_selesai
                     )) {
@@ -1365,8 +1746,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Check conflict with other schedules
                     for (const schedule of latestExisting) {
                         if (timeRangesOverlap(
-                            session.startTime, 
-                            session.endTime, 
+                            customTime.startTime, 
+                            customTime.endTime, 
                             schedule.startTime, 
                             schedule.endTime
                         )) {
@@ -1377,8 +1758,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
                 }
-                
-                if (hasConflict) break;
             }
             
             if (hasConflict) {
@@ -1389,12 +1768,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (conflictType === 'reguler') {
                     const dayName = getDayName(dateInput.value);
                     showNotification(
-                        `Jadwal yang dipilih bentrok dengan jadwal reguler pada hari ${dayName} (${conflictingSchedule.jam_mulai} - ${conflictingSchedule.jam_selesai}). Silakan pilih sesi lain.`, 
+                        `Jadwal yang dipilih bentrok dengan jadwal reguler pada hari ${dayName} (${conflictingSchedule.jam_mulai} - ${conflictingSchedule.jam_selesai}). Silakan pilih waktu lain.`, 
                         'error'
                     );
                 } else {
                     showNotification(
-                        `Jadwal yang dipilih bentrok dengan jadwal yang sudah ada (${conflictingSchedule.startTime} - ${conflictingSchedule.endTime}). Silakan pilih sesi lain.`, 
+                        `Jadwal yang dipilih bentrok dengan jadwal yang sudah ada (${conflictingSchedule.startTime} - ${conflictingSchedule.endTime}). Silakan pilih waktu lain.`, 
                         'error'
                     );
                 }

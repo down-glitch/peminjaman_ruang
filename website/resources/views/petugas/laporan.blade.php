@@ -3,76 +3,61 @@
 @section('title', 'Laporan Peminjaman Ruangan')
 
 @section('content')
-<div class="container-fluid">
-    <!-- Print Header (Hidden on screen, visible on print) -->
-    <div class="print-header">
-        <div class="print-logo">
-            <i class="fas fa-door-open"></i>
-        </div>
-        <div class="print-title">
-            <h1>Laporan Peminjaman Ruangan</h1>
-            <p>Dicetak pada: <span id="printDate"></span></p>
-        </div>
+<!-- Wrapper unik untuk mengisolasi CSS -->
+<div id="laporan-wrapper">
+    <!-- Header untuk Cetak -->
+    <div class="cetak-header">
+        <h1>Laporan Peminjaman Ruangan</h1>
+        <p>Dicetak pada: <span id="tanggal-cetak"></span></p>
     </div>
 
-    <div class="page-header d-flex justify-content-between align-items-center mb-4 no-print">
+    <!-- Header Halaman (Tidak tercetak) -->
+    <div class="halaman-header">
         <div>
-            <h3 class="page-title"><i class="fas fa-file-alt me-2"></i> Laporan Peminjaman Ruangan</h3>
-            <p class="page-subtitle">Filter dan cetak laporan peminjaman ruangan</p>
+            <h2>Laporan Peminjaman Ruangan</h2>
+            <p>Filter dan cetak laporan peminjaman ruangan</p>
         </div>
-        <div class="page-actions">
-            <a href="{{ route('laporan.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-sync me-2"></i> Refresh
-            </a>
-        </div>
+        <a href="{{ route('laporan.index') }}" class="btn-tombol btn-sekunder">
+            <i class="fas fa-sync"></i> Refresh
+        </a>
     </div>
 
-    <div class="card">
-        <div class="card-header no-print">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Data Laporan</h5>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-sm btn-primary" onclick="printTable()">
-                        <i class="fas fa-print me-1"></i> Cetak
-                    </button>
-                </div>
+    <!-- Kartu Utama -->
+    <div class="kartu-utama">
+        <!-- Header Kartu (Tidak tercetak) -->
+        <div class="kartu-header tidak-cetak">
+            <h5>Data Laporan</h5>
+            <div>
+                <button class="btn-tombol btn-sekunder" onclick="eksporExcel()">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+                <button class="btn-tombol btn-utama" onclick="cetakTabel()">
+                    <i class="fas fa-print"></i> Cetak
+                </button>
             </div>
         </div>
 
-        <div class="card-body">
-            <!-- Filter Section (Hidden on print) -->
-            <div class="filter-section no-print">
-                <form action="{{ route('laporan.index') }}" method="GET" class="filter-form">
-                    <div class="row g-3 mb-4">
-                        <div class="col-lg-3 col-md-6">
-                            <label for="tanggal" class="form-label">Filter Tanggal</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-calendar-day"></i>
-                                </span>
-                                <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}" 
-                                       class="form-control">
-                            </div>
+        <div class="kartu-body">
+            <!-- Filter (Tidak tercetak) -->
+            <div class="filter-area tidak-cetak">
+                <form action="{{ route('laporan.index') }}" method="GET">
+                    <div class="filter-baris">
+                        <div class="filter-kolom">
+                            <label>Filter Tanggal</label>
+                            <input type="date" name="tanggal" value="{{ request('tanggal') }}">
                         </div>
-                        <div class="col-lg-3 col-md-6">
-                            <label for="bulan" class="form-label">Filter Bulan</label>
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fas fa-calendar-alt"></i>
-                                </span>
-                                <input type="month" name="bulan" id="bulan" value="{{ request('bulan') }}" 
-                                       class="form-control">
-                            </div>
+                        <div class="filter-kolom">
+                            <label>Filter Bulan</label>
+                            <input type="month" name="bulan" value="{{ request('bulan') }}">
                         </div>
-                        <div class="col-lg-3 col-md-6 d-flex align-items-end">
-                            <div class="d-flex gap-2 w-100">
-                                <button type="submit" class="btn btn-primary flex-fill">
-                                    <i class="fas fa-filter me-2"></i> Filter
+                        <div class="filter-kolom">
+                            <label>&nbsp;</label>
+                            <div class="filter-aksi">
+                                <button type="submit" class="btn-tombol btn-utama">
+                                    <i class="fas fa-filter"></i> Filter
                                 </button>
-                                <a href="{{ route('laporan.index') }}" class="btn btn-outline-secondary flex-fill">
-                                    <i class="fas fa-undo me-2"></i> Reset
+                                <a href="{{ route('laporan.index') }}" class="btn-tombol btn-sekunder">
+                                    <i class="fas fa-undo"></i> Reset
                                 </a>
                             </div>
                         </div>
@@ -80,975 +65,477 @@
                 </form>
             </div>
 
-            <!-- Summary Stats -->
-            <div class="stats-section mb-4 print-stats">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stats-card">
-                            <div class="stats-icon total">
-                                <i class="fas fa-list"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h4>{{ $bookings->count() }}</h4>
-                                <p>Total Data</p>
-                                <div class="stats-progress">
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 100%; background: var(--gradient-primary);" aria-valuenow="{{ $bookings->count() }}" aria-valuemin="0" aria-valuemax="{{ $bookings->count() }}"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stats-card">
-                            <div class="stats-icon approved">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h4>{{ $bookings->where('status', 'approved')->count() }}</h4>
-                                <p>Disetujui</p>
-                                <div class="stats-progress">
+            <!-- Statistik -->
+            @php
+                $bookingsCollection = isset($bookings) ? $bookings : collect([]);
+                $total = $bookingsCollection->count();
+                $approvedCount = $bookingsCollection->where('status', 'approved')->count();
+                $pendingCount = $bookingsCollection->where('status', 'pending')->count();
+                $rejectedCount = $bookingsCollection->where('status', 'rejected')->count();
+            @endphp
 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stats-card">
-                            <div class="stats-icon pending">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h4>{{ $bookings->where('status', 'pending')->count() }}</h4>
-                                <p>Menunggu</p>
-                                <div class="stats-progress">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 mb-3">
-                        <div class="stats-card">
-                            <div class="stats-icon rejected">
-                                <i class="fas fa-times-circle"></i>
-                            </div>
-                            <div class="stats-info">
-                                <h4>{{ $bookings->where('status', 'rejected')->count() }}</h4>
-                                <p>Ditolak</p>
-                                <div class="stats-progress">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="stat-grid">
+                <div class="stat-card total">
+                    <div class="stat-angka">{{ $total }}</div>
+                    <div class="stat-label">Total Data</div>
+                </div>
+                <div class="stat-card disetujui">
+                    <div class="stat-angka">{{ $approvedCount }}</div>
+                    <div class="stat-label">Disetujui</div>
+                </div>
+                <div class="stat-card menunggu">
+                    <div class="stat-angka">{{ $pendingCount }}</div>
+                    <div class="stat-label">Menunggu</div>
+                </div>
+                <div class="stat-card ditolak">
+                    <div class="stat-angka">{{ $rejectedCount }}</div>
+                    <div class="stat-label">Ditolak</div>
                 </div>
             </div>
 
-            <!-- Data Table -->
-            <div id="printTableArea">
-                <div class="table-container">
-                    <div class="table-responsive">
-                        <table class="table table-hover print-table">
-                            <thead>
-                                <tr>
-                                    <th width="50">No</th>
-                                    <th>Nama Peminjam</th>
-                                    <th>Ruangan</th>
-                                    <th>Tanggal</th>
-                                    <th>Waktu</th>
-                                    <th>Keterangan</th>
-                                    <th width="120">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($bookings as $index => $b)
-                                <tr>
-                                    <td class="text-center">{{ $index + 1 }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-2">
-                                                {{ strtoupper(substr($b->user->username ?? '', 0, 1)) }}
-                                            </div>
-                                            <div>
-                                                <div class="fw-medium">{{ $b->user->username ?? '-' }}</div>
-                                                <small class="text-muted">{{ $b->user->email ?? '-' }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="room-icon me-2">
-                                                <i class="fas fa-door-open"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-medium">{{ $b->room->nama_room ?? '-' }}</div>
-                                                <small class="text-muted">Kapasitas: {{ $b->room->kapasitas ?? '-' }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="date-info">
-                                            <i class="fas fa-calendar me-1"></i>
-                                            {{ \Carbon\Carbon::parse($b->tanggal)->translatedFormat('d F Y') }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="time-info">
-                                            <i class="fas fa-clock me-1"></i>
-                                            {{ $b->jam_mulai }} - {{ $b->jam_selesai }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="description-text" title="{{ $b->keterangan ?? '-' }}">
-                                            {{ $b->keterangan ?? '-' }}
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        @if($b->status === 'approved')
-                                            <span class="status-badge approved">
-                                                <i class="fas fa-check me-1"></i> Disetujui
-                                            </span>
-                                        @elseif($b->status === 'pending')
-                                            <span class="status-badge pending">
-                                                <i class="fas fa-clock me-1"></i> Menunggu
-                                            </span>
-                                        @else
-                                            <span class="status-badge rejected">
-                                                <i class="fas fa-times me-1"></i> Ditolak
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <i class="fas fa-inbox"></i>
-                                            <h5>Tidak ada data peminjaman</h5>
-                                            <p>Tidak ditemukan data peminjaman dengan filter yang dipilih</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- Tabel Data -->
+            <div class="tabel-area">
+                <table class="tabel-data">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Peminjam</th>
+                            <th>Ruangan</th>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Keterangan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($bookingsCollection as $index => $b)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $b->user->username ?? 'Tidak diketahui' }}</td>
+                            <td>{{ $b->room->nama_room ?? 'Tidak diketahui' }}</td>
+                            <td>{{ isset($b->tanggal) ? \Carbon\Carbon::parse($b->tanggal)->format('d-m-Y') : '-' }}</td>
+                            <td>{{ ($b->jam_mulai ?? '-') . ' - ' . ($b->jam_selesai ?? '-') }}</td>
+                            <td>{{ $b->keterangan ?? '-' }}</td>
+                            <td>
+                                @if($b->status === 'approved')
+                                    <span class="badge-status sukses">Disetujui</span>
+                                @elseif($b->status === 'pending')
+                                    <span class="badge-status peringatan">Menunggu</span>
+                                @elseif($b->status === 'rejected')
+                                    <span class="badge-status gagal">Ditolak</span>
+                                @else
+                                    <span class="badge-status netral">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="tidak-ada-data">
+                                Tidak ada data peminjaman.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-
-            <!-- Table Footer -->
-            <div class="table-footer d-flex justify-content-between align-items-center mt-3 no-print">
-                <div class="text-muted">
-                    <small>Menampilkan {{ $bookings->count() }} dari {{ $bookings->count() }} data peminjaman</small>
-                </div>
-                <div class="table-actions">
-                    <button class="btn btn-sm btn-outline-secondary" onclick="previousPage()">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary" onclick="nextPage()">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Print Footer (Hidden on screen, visible on print) -->
-    <div class="print-footer">
-        <div class="footer-content">
-            <p>&copy; {{ date('Y') }} Sistem Peminjaman Ruangan</p>
-            <p>Halaman <span class="page-number"></span></p>
         </div>
     </div>
 </div>
 
 <style>
-    .page-header {
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border-color);
+/* --- AWAL CSS YANG TERISOLASI --- */
+/* Semua style di dalam ini hanya berlaku untuk elemen di dalam #laporan-wrapper */
+
+#laporan-wrapper {
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Header untuk cetak - disembunyikan di layar */
+.cetak-header {
+    display: none;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #000;
+}
+.cetak-header h1 { font-size: 18px; font-weight: bold; margin: 0; }
+.cetak-header p { font-size: 12px; margin: 5px 0 0; }
+
+/* Footer untuk cetak - disembunyikan di layar */
+.cetak-footer {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 10px;
+    color: #666;
+}
+
+/* Header Halaman (tidak tercetak) */
+.halaman-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.halaman-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2D2416;
+    margin: 0;
+}
+.halaman-header p {
+    font-size: 14px;
+    color: #777;
+    margin: 5px 0 0;
+}
+
+/* Kartu Utama */
+.kartu-utama {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+.kartu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    background: #f8f5f0;
+    border-bottom: 1px solid #e0e0e0;
+}
+.kartu-header h5 { font-size: 16px; font-weight: 600; margin: 0; color: #2D2416; }
+.kartu-body { padding: 25px; }
+
+/* Tombol */
+.btn-tombol {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-utama {
+    background: #E2B88A;
+    color: #fff;
+    border-color: #C19660;
+}
+.btn-utama:hover { background: #C19660; transform: translateY(-1px); }
+.btn-sekunder {
+    background: #fff;
+    color: #5A4A36;
+    border-color: #e0e0e0;
+}
+.btn-sekunder:hover { background: #f2f2f2; }
+
+/* Filter */
+.filter-area {
+    background: #f8f5f0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+.filter-baris {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    gap: 20px;
+    align-items: end;
+}
+.filter-kolom label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2D2416;
+    margin-bottom: 8px;
+}
+.filter-kolom input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.filter-aksi { display: flex; gap: 10px; }
+
+/* Statistik */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+.stat-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+.stat-card.total { border-left: 4px solid #E2B88A; }
+.stat-card.disetujui { border-left: 4px solid #10B981; }
+.stat-card.menunggu { border-left: 4px solid #F59E0B; }
+.stat-card.ditolak { border-left: 4px solid #EF4444; }
+.stat-angka {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2D2416;
+    margin-bottom: 5px;
+}
+.stat-label {
+    font-size: 13px;
+    color: #777;
+    font-weight: 500;
+}
+
+/* Tabel */
+.tabel-area {
+    overflow-x: auto;
+}
+.tabel-data {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.tabel-data th {
+    background: #f8f5f0;
+    color: #2D2416;
+    font-weight: 600;
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+.tabel-data td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+.tabel-data tr:hover { background: #fafafa; }
+.tidak-ada-data {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #999 !important;
+    font-size: 16px !important;
+}
+
+/* Badge Status */
+.badge-status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+.badge-status.sukses {
+    background: #d1fae5;
+    color: #065f46;
+}
+.badge-status.peringatan {
+    background: #fed7aa;
+    color: #92400e;
+}
+.badge-status.gagal {
+    background: #fecaca;
+    color: #991b1b;
+}
+.badge-status.netral {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    .halaman-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .filter-baris { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr; }
+}
+
+
+/* ========================================================= */
+/* =================== FORMAT CETAK (PRINT) ================== */
+/* ========================================================= */
+
+@media print {
+    /* 1. Pengaturan Halaman & Kertas */
+    @page {
+        size: A4 landscape; /* Membuat orientasi landscape untuk tabel lebar */
+        margin: 15mm; /* Margin di setiap sisi */
     }
 
-    .page-title {
-        font-family: 'Playfair Display', serif;
-        font-size: 28px;
-        font-weight: 700;
-        color: var(--text);
-        margin-bottom: 8px;
-        letter-spacing: -0.5px;
+    /* 2. Sembunyikan Semua Elemen di Luar Wrapper */
+    body * {
+        visibility: hidden;
     }
 
-    .page-subtitle {
-        font-size: 15px;
-        color: var(--text-secondary);
-        margin: 0;
+    /* 3. Tampilkan Hanya Konten di Dalam Wrapper */
+    #laporan-wrapper, #laporan-wrapper * {
+        visibility: visible;
     }
 
-    .page-actions .btn {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        color: var(--text);
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .page-actions .btn:hover {
-        background: var(--sidebar-hover);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .card {
-        background: var(--card-bg);
-        border: none;
-        border-radius: 16px;
-        box-shadow: var(--shadow-md);
-        overflow: hidden;
-        margin-bottom: 24px;
-    }
-
-    .card-header {
-        background: var(--gradient-sidebar);
-        border-bottom: 1px solid var(--border-color);
-        padding: 20px 24px;
-    }
-
-    .card-header h5 {
-        font-weight: 600;
-        color: var(--text);
-        margin: 0;
-    }
-
-    .header-actions .btn {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        color: var(--text);
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .header-actions .btn:hover {
-        background: var(--sidebar-hover);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .header-actions .btn-primary {
-        background: var(--gradient-primary);
-        border: none;
-        color: var(--text);
-    }
-
-    .header-actions .btn-primary:hover {
-        background: var(--gradient-primary);
-        box-shadow: var(--shadow-md);
-    }
-
-    .filter-section {
-        background: var(--sidebar-bg);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 24px;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: var(--text);
-        margin-bottom: 8px;
-    }
-
-    .input-group {
-        position: relative;
-    }
-
-    .input-group-text {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-right: none;
-        color: var(--accent);
-    }
-
-    .form-control, .form-select {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        color: var(--text);
-        border-radius: 0 8px 8px 0;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 0.25rem rgba(156, 124, 94, 0.25);
-    }
-
-    .btn-primary {
-        background: var(--gradient-primary);
-        border: none;
-        color: var(--text);
-        font-weight: 600;
-        padding: 10px 16px;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary:hover {
-        background: var(--gradient-primary);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .btn-outline-secondary {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        color: var(--text);
-        font-weight: 500;
-        padding: 10px 16px;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-    }
-
-    .btn-outline-secondary:hover {
-        background: var(--sidebar-hover);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .stats-section {
-        margin-bottom: 24px;
-    }
-
-    .stats-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        height: 100%;
-    }
-
-    .stats-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .stats-card::before {
-        content: '';
+    /* 4. Posisikan Wrapper dari Awal Halaman */
+    #laporan-wrapper {
         position: absolute;
-        top: 0;
         left: 0;
-        width: 4px;
-        height: 100%;
+        top: 0;
+        width: 100%;
+        padding: 10mm; /* Padding di dalam margin kertas */
     }
 
-    .stats-card.total::before {
-        background: var(--gradient-primary);
+    /* 5. Tampilkan Header & Footer Khusus Cetak */
+    .cetak-header, .cetak-footer, .stat-grid, .tabel-area {
+        display: block !important;
+    }
+    
+    /* 6. Sembunyikan Elemen Interaktif */
+    .tidak-cetak, .filter-area, .kartu-header, .halaman-header {
+        display: none !important;
     }
 
-    .stats-card.approved::before {
-        background: linear-gradient(180deg, #28a745, #20c997);
+    /* 7. Reset Font dan Warna Dasar */
+    #laporan-wrapper {
+        font-size: 11pt;
+        line-height: 1.3;
+        color: #000 !important;
+        background: #fff !important;
+    }
+    
+    /* 8. Gaya Header Cetak */
+    .cetak-header h1 {
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        margin-bottom: 5pt !important;
+    }
+    .cetak-header p {
+        font-size: 10pt !important;
+        margin: 0 !important;
     }
 
-    .stats-card.pending::before {
-        background: linear-gradient(180deg, #ffc107, #fd7e14);
+    /* 9. Gaya Kartu Statistik Cetak */
+    .stat-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 10mm !important;
+        margin-bottom: 10mm !important;
+        page-break-inside: avoid; /* Cegah kartu terpotong */
+    }
+    .stat-card {
+        border: 1pt solid #000 !important;
+        padding: 8pt !important;
+        text-align: center !important;
+        background: #fff !important;
+    }
+    .stat-angka, .stat-label {
+        color: #000 !important;
+        font-weight: bold !important;
+    }
+    .stat-angka { font-size: 14pt !important; }
+    .stat-label { font-size: 10pt !important; font-weight: normal !important; }
+
+    /* 10. Gaya Tabel Cetak - PALING PENTING */
+    .tabel-data {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin: 0 !important;
+        font-size: 10pt !important;
+    }
+    .tabel-data th {
+        background: #f0f0f0 !important; /* Warna abu-abu terang untuk header */
+        color: #000 !important;
+        border: 1pt solid #000 !important;
+        padding: 6pt 8pt !important;
+        font-weight: bold !important;
+        text-align: left !important;
+    }
+    .tabel-data td {
+        border: 1pt solid #000 !important;
+        padding: 5pt 8pt !important;
+        background: #fff !important;
+        color: #000 !important;
+        vertical-align: top !important;
+    }
+    .tabel-data tr {
+        page-break-inside: avoid; /* Cegah baris terpotong */
     }
 
-    .stats-card.rejected::before {
-        background: linear-gradient(180deg, #dc3545, #e83e8c);
+    /* 11. Gaya Badge Cetak (gunakan border, bukan background) */
+    .badge-status {
+        border: 1pt solid #000 !important;
+        background: #fff !important;
+        color: #000 !important;
+        padding: 2pt 6pt !important;
+        font-size: 9pt !important;
+        font-weight: bold !important;
+        border-radius: 0 !important; /* Buat kotak sederhana */
     }
 
-    .stats-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: white;
-        box-shadow: var(--shadow-sm);
-        flex-shrink: 0;
+    /* 12. Gaya Footer Cetak */
+    .cetak-footer {
+        display: block !important;
+        margin-top: 10mm !important;
+        padding-top: 5mm !important;
+        border-top: 1pt solid #ccc !important;
+        font-size: 9pt !important;
+        color: #666 !important;
     }
-
-    .stats-icon.total {
-        background: var(--gradient-primary);
+    .cetak-footer .page-number::before {
+        content: "Halaman " counter(page);
     }
-
-    .stats-icon.approved {
-        background: linear-gradient(135deg, #28a745, #20c997);
+    body {
+        counter-reset: page;
     }
-
-    .stats-icon.pending {
-        background: linear-gradient(135deg, #ffc107, #fd7e14);
-    }
-
-    .stats-icon.rejected {
-        background: linear-gradient(135deg, #dc3545, #e83e8c);
-    }
-
-    .stats-info {
-        flex: 1;
-    }
-
-    .stats-info h4 {
-        font-weight: 700;
-        font-size: 24px;
-        margin-bottom: 4px;
-        color: var(--text);
-    }
-
-    .stats-info p {
-        font-size: 14px;
-        color: var(--text-secondary);
-        margin-bottom: 12px;
-    }
-
-    .stats-progress {
-        height: 4px;
-    }
-
-    .progress {
-        height: 4px;
-        background: var(--sidebar-hover);
-        border-radius: 2px;
-    }
-
-    .progress-bar {
-        border-radius: 2px;
-    }
-
-    .table-container {
-        background: var(--card-bg);
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid var(--border-color);
-    }
-
-    .table {
-        margin-bottom: 0;
-    }
-
-    .table thead th {
-        background: var(--sidebar-bg);
-        color: var(--text);
-        font-weight: 600;
-        border-bottom: 2px solid var(--border-color);
-        padding: 16px;
-        font-size: 14px;
-    }
-
-    .table tbody td {
-        padding: 16px;
-        vertical-align: middle;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 14px;
-    }
-
-    .table tbody tr:hover {
-        background: var(--sidebar-hover);
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--gradient-primary);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 16px;
-        flex-shrink: 0;
-    }
-
-    .room-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        background: var(--sidebar-hover);
-        color: var(--accent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .date-info, .time-info {
-        display: flex;
-        align-items: center;
-        color: var(--text);
-    }
-
-    .date-info i, .time-info i {
-        color: var(--accent);
-        margin-right: 6px;
-    }
-
-    .description-text {
-        color: var(--text);
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
-
-    .status-badge {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-    }
-
-    .status-badge.approved {
-        background: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-        border: 1px solid rgba(40, 167, 69, 0.3);
-    }
-
-    .status-badge.pending {
-        background: rgba(255, 193, 7, 0.1);
-        color: #ffc107;
-        border: 1px solid rgba(255, 193, 7, 0.3);
-    }
-
-    .status-badge.rejected {
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border: 1px solid rgba(220, 53, 69, 0.3);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: var(--text);
-    }
-
-    .empty-state i {
-        font-size: 48px;
-        margin-bottom: 16px;
-        color: var(--text-muted);
-    }
-
-    .empty-state h5 {
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: var(--text);
-    }
-
-    .empty-state p {
-        color: var(--text-secondary);
-        margin-bottom: 0;
-    }
-
-    .table-footer {
-        padding: 16px 0;
-    }
-
-    .table-actions .btn {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        color: var(--text);
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-    }
-
-    .table-actions .btn:hover {
-        background: var(--sidebar-hover);
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    /* Print Header and Footer */
-    .print-header {
-        display: none;
-        text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #000;
-    }
-
-    .print-logo {
-        font-size: 24px;
-        margin-bottom: 10px;
-    }
-
-    .print-title h1 {
-        font-size: 20px;
-        font-weight: bold;
-        margin: 0;
-    }
-
-    .print-title p {
-        font-size: 12px;
-        margin: 5px 0 0;
-    }
-
-    .print-footer {
-        display: none;
-        text-align: center;
-        margin-top: 20px;
-        padding-top: 10px;
-        border-top: 1px solid #ccc;
-        font-size: 10px;
-        color: #666;
-    }
-
-    /* Print Styles */
-    @media print {
-        /* General Print Settings */
-        body {
-            font-size: 12px;
-            line-height: 1.4;
-            color: #000;
-            background: #fff !important;
-        }
-
-        /* Hide screen elements */
-        .no-print, .page-header, .card-header, .filter-section, .table-footer {
-            display: none !important;
-        }
-
-        /* Show print elements */
-        .print-header, .print-footer, .print-stats {
-            display: block !important;
-        }
-
-        /* Print Container */
-        #printTableArea {
-            position: relative !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: white !important;
-        }
-
-        /* Print Table */
-        .print-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            margin: 0 !important;
-            font-size: 11px !important;
-        }
-
-        .print-table thead th {
-            background: #f5f5f5 !important;
-            color: #000 !important;
-            border: 1px solid #000 !important;
-            padding: 8px !important;
-            text-align: left !important;
-            font-weight: bold !important;
-            -webkit-print-color-adjust: exact;
-        }
-
-        .print-table tbody td {
-            border: 1px solid #000 !important;
-            padding: 6px !important;
-            background: white !important;
-            color: #000 !important;
-            vertical-align: top !important;
-        }
-
-        .print-table tbody tr:nth-child(even) {
-            background: #f9f9f9 !important;
-            -webkit-print-color-adjust: exact;
-        }
-
-        /* Print Stats */
-        .print-stats {
-            margin-bottom: 20px !important;
-        }
-
-        .stats-card {
-            border: 1px solid #000 !important;
-            page-break-inside: avoid;
-            margin-bottom: 10px !important;
-        }
-
-        .stats-icon {
-            background: #f5f5f5 !important;
-            color: #000 !important;
-            border: 1px solid #000 !important;
-        }
-
-        .stats-info h4 {
-            color: #000 !important;
-        }
-
-        .stats-info p {
-            color: #000 !important;
-        }
-
-        /* Status Badges */
-        .status-badge {
-            border: 1px solid #000 !important;
-            background: white !important;
-            color: #000 !important;
-            padding: 2px 6px !important;
-            font-size: 10px !important;
-        }
-
-        /* Avatar and Room Icons */
-        .avatar-circle, .room-icon {
-            background: #f5f5f5 !important;
-            color: #000 !important;
-            border: 1px solid #000 !important;
-        }
-
-        /* Page Settings */
-        @page {
-            size: A4 landscape;
-            margin: 15mm;
-        }
-
-        /* Page Numbers */
-        .page-number:before {
-            content: counter(page);
-        }
-
-        body {
-            counter-reset: page;
-        }
-
-        /* Prevent content from being cut off */
-        tr, .stats-card {
-            page-break-inside: avoid;
-        }
-
-        /* Ensure table fits on page */
-        .table-responsive {
-            overflow: visible !important;
-        }
-
-        /* Adjust table width for print */
-        .print-table {
-            table-layout: fixed;
-        }
-
-        .print-table th:nth-child(1),
-        .print-table td:nth-child(1) {
-            width: 5%;
-        }
-
-        .print-table th:nth-child(2),
-        .print-table td:nth-child(2) {
-            width: 20%;
-        }
-
-        .print-table th:nth-child(3),
-        .print-table td:nth-child(3) {
-            width: 15%;
-        }
-
-        .print-table th:nth-child(4),
-        .print-table td:nth-child(4) {
-            width: 15%;
-        }
-
-        .print-table th:nth-child(5),
-        .print-table td:nth-child(5) {
-            width: 15%;
-        }
-
-        .print-table th:nth-child(6),
-        .print-table td:nth-child(6) {
-            width: 20%;
-        }
-
-        .print-table th:nth-child(7),
-        .print-table td:nth-child(7) {
-            width: 10%;
-        }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start !important;
-        }
-
-        .page-actions {
-            margin-top: 16px;
-            width: 100%;
-        }
-
-        .page-actions .btn {
-            width: 100%;
-        }
-
-        .card-header {
-            padding: 16px;
-        }
-
-        .header-actions {
-            margin-top: 12px;
-            width: 100%;
-        }
-
-        .header-actions .btn {
-            flex: 1;
-        }
-
-        .filter-section {
-            padding: 16px;
-        }
-
-        .stats-card {
-            padding: 16px;
-        }
-
-        .stats-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-        }
-
-        .stats-info h4 {
-            font-size: 20px;
-        }
-
-        .table thead th, .table tbody td {
-            padding: 12px 8px;
-            font-size: 12px;
-        }
-
-        .avatar-circle {
-            width: 32px;
-            height: 32px;
-            font-size: 14px;
-        }
-
-        .room-icon {
-            width: 30px;
-            height: 30px;
-        }
-
-        .description-text {
-            max-width: 150px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .page-title {
-            font-size: 24px;
-        }
-
-        .filter-form .row {
-            gap: 12px;
-        }
-
-        .filter-form .col-lg-3 {
-            width: 100%;
-        }
-
-        .d-flex.gap-2 {
-            flex-direction: column;
-        }
-
-        .table-footer {
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .table-footer .text-muted {
-            order: 2;
-        }
-
-        .table-actions {
-            order: 1;
-            width: 100%;
-            justify-content: center;
-        }
-    }
+}
+/* --- AKHIR CSS YANG TERISOLASI --- */
 </style>
-
 <script>
-function printTable() {
-    // Set print date
+function cetakTabel() {
     const now = new Date();
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('printDate').textContent = now.toLocaleDateString('id-ID', options);
-    
-    // Trigger print dialog
+    document.getElementById('tanggal-cetak').textContent = now.toLocaleDateString('id-ID', options);
     window.print();
 }
 
-function exportData(format) {
-    // Placeholder for export functionality
-    alert(`Mengekspor data dalam format ${format.toUpperCase()}`);
-}
-
-function previousPage() {
-    // Placeholder for pagination
-    alert('Navigasi ke halaman sebelumnya');
-}
-
-function nextPage() {
-    // Placeholder for pagination
-    alert('Navigasi ke halaman berikutnya');
-}
-
-// Auto-apply data labels for mobile responsive table
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.innerWidth <= 576) {
-        document.querySelectorAll('.table thead th').forEach((th, index) => {
-            const label = th.textContent;
-            document.querySelectorAll('.table tbody td').forEach(td => {
-                if (td.cellIndex === index) {
-                    td.setAttribute('data-label', label);
-                }
-            });
+function eksporExcel() {
+    // Fungsi ekspor tetap sama
+    const table = document.querySelector('.tabel-data');
+    if (!table) { alert('Tabel tidak ditemukan'); return; }
+    
+    let csv = [];
+    table.querySelectorAll('tr').forEach(tr => {
+        const row = [];
+        tr.querySelectorAll('th, td').forEach(td => {
+            let text = td.textContent.trim().replace(/,/g, ';');
+            if (text.includes('"')) text = text.replace(/"/g, '""');
+            if (text.includes('\n') || text.includes(',')) text = `"${text}"`;
+            row.push(text);
         });
-    }
-});
-
-// Add animation to stats cards
-document.addEventListener('DOMContentLoaded', function() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
-            }
-        });
+        csv.push(row.join(','));
     });
-
-    document.querySelectorAll('.stats-card').forEach(card => {
-        observer.observe(card);
-    });
-});
-
-// Add animation keyframes
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-`;
-document.head.appendChild(style);
+    
+    const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `laporan_peminjaman_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    alert('Data berhasil diekspor');
+}
 </script>
 @endsection

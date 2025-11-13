@@ -3,25 +3,29 @@
 @section('title', 'Riwayat Peminjaman')
 
 @section('content')
-<div class="content-wrapper">
-    <!-- Header -->
-    <div class="dashboard-header">
-        <div class="header-content">
-            <div class="title-section">
-                <h1 class="page-title">
-                    <i class="fas fa-history"></i>
-                    Riwayat Peminjaman
-                </h1>
-                <p class="page-subtitle">Lihat semua riwayat peminjaman ruangan Anda</p>
-            </div>
-            <div class="stats-section">
-                <div class="stat-card total">
-                    <div class="stat-icon">
-                        <i class="fas fa-list"></i>
+<div class="container py-4">
+    <!-- Header dengan gradien subtle -->
+    <div class="header-section mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-history"></i>
                     </div>
-                    <div class="stat-info">
-                        <span class="stat-number">{{ count($bookings) }}</span>
-                        <span class="stat-label">Total</span>
+                    <div>
+                        <h1 class="h3 mb-1 fw-bold">Riwayat Peminjaman</h1>
+                        <p class="text-muted mb-0">Kelola dan pantau semua peminjaman ruangan Anda</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="stats-badge">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <i class="fas fa-list-check me-2"></i>
+                        <div>
+                            <div class="stats-number">{{ count($bookings) }}</div>
+                            <div class="stats-label">Total</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -29,149 +33,173 @@
     </div>
 
     @if(session('success'))
-        <div class="alert-message success fade-in">
-            <div class="alert-icon">
-                <i class="fas fa-check-circle"></i>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-check-circle me-2"></i>
+                <div class="flex-grow-1">{{ session('success') }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <div class="alert-content">
-                <h6 class="alert-title">Berhasil!</h6>
-                <p>{{ session('success') }}</p>
-            </div>
-            <button type="button" class="alert-close">
-                <i class="fas fa-times"></i>
-            </button>
         </div>
     @endif
 
-    <!-- Filter Section -->
-    <div class="filter-section">
-        <div class="filter-group">
-            <div class="filter-item">
-                <label>Status:</label>
-                <select class="filter-select" onchange="filterTable()">
-                    <option value="all">Semua Status</option>
-                    <option value="pending">Menunggu</option>
-                    <option value="approved">Disetujui</option>
-                    <option value="rejected">Ditolak</option>
-                </select>
+    <!-- Filter Section dengan design lebih baik -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <label class="me-3 fw-semibold">Filter:</label>
+                        <div class="filter-pills">
+                            <button class="filter-btn active" onclick="filterTable('all')">
+                                <i class="fas fa-border-all me-1"></i>Semua
+                            </button>
+                            <button class="filter-btn" onclick="filterTable('pending')">
+                                <i class="fas fa-clock me-1"></i>Menunggu
+                            </button>
+                            <button class="filter-btn" onclick="filterTable('approved')">
+                                <i class="fas fa-check me-1"></i>Disetujui
+                            </button>
+                            <button class="filter-btn" onclick="filterTable('rejected')">
+                                <i class="fas fa-times me-1"></i>Ditolak
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh
+                    </button>
+                </div>
             </div>
-        </div>
-        <div class="filter-actions">
-            <button class="btn-refresh" onclick="location.reload()">
-                <i class="fas fa-sync-alt"></i>
-                Refresh
-            </button>
         </div>
     </div>
 
     <!-- Content -->
     @if($bookings->count() > 0)
-        <div class="booking-cards">
+        <div class="row g-4">
             @foreach($bookings as $index => $b)
-            <div class="booking-card" data-status="{{ $b->status }}" data-id="{{ $b->id }}">
-                <div class="card-header">
-                    <div class="room-info">
-                        <div class="room-icon">
-                            <i class="fas fa-door-closed"></i>
-                        </div>
-                        <div class="room-details">
-                            <h3 class="room-name">{{ $b->room->nama_room ?? 'Ruangan' }}</h3>
-                            <span class="booking-id">#{{ $index + 1 }}</span>
-                        </div>
-                    </div>
-                    <div class="status-badge {{ $b->status }}">
-                        @if($b->status == 'pending')
-                            <i class="fas fa-clock"></i>
-                            <span>Menunggu</span>
-                        @elseif($b->status == 'approved')
-                            <i class="fas fa-check"></i>
-                            <span>Disetujui</span>
-                        @else
-                            <i class="fas fa-times"></i>
-                            <span>Ditolak</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-calendar"></i>
+            <div class="col-lg-6 col-xl-4 booking-item" data-status="{{ $b->status }}">
+                <div class="card booking-card h-100 border-0 shadow-sm">
+                    <div class="card-header bg-white border-0 pt-4 pb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex align-items-center">
+                                <div class="room-icon me-3">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1 fw-bold">{{ $b->room->nama_room ?? 'Ruangan' }}</h5>
+                                    <span class="booking-id">ID: #{{ str_pad($index + 1, 4, '0', STR_PAD_LEFT) }}</span>
+                                </div>
                             </div>
-                            <div class="info-content">
-                                <label>Tanggal</label>
-                                <span>{{ \Carbon\Carbon::parse($b->tanggal)->format('d M Y') }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="info-content">
-                                <label>Sesi</label>
-                                <span>{{ \Carbon\Carbon::parse($b->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($b->jam_selesai)->format('H:i') }}</span>
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-icon">
-                                <i class="fas fa-hourglass-half"></i>
-                            </div>
-                            <div class="info-content">
-                                <label>Durasi</label>
-                                <span>
-                                    @php
-                                        $start = \Carbon\Carbon::parse($b->jam_mulai);
-                                        $end = \Carbon\Carbon::parse($b->jam_selesai);
-                                        $duration = $end->diff($start);
-                                        $hours = $duration->h;
-                                        $minutes = $duration->i;
-                                        $totalMinutes = ($hours * 60) + $minutes;
-                                        $formattedDuration = '';
-                                        if ($hours > 0) {
-                                            $formattedDuration .= $hours . ' jam';
-                                        }
-                                        if ($minutes > 0) {
-                                            $formattedDuration .= ($formattedDuration ? ' ' : '') . $minutes . ' menit';
-                                        }
-                                        if ($totalMinutes == 0) {
-                                            $formattedDuration = '0 menit';
-                                        }
-                                    @endphp
-                                    {{ $formattedDuration }}
-                                </span>
+                            <div class="status-indicator">
+                                @if($b->status == 'pending')
+                                    <span class="status-badge pending">
+                                        <i class="fas fa-clock me-1"></i>Menunggu
+                                    </span>
+                                @elseif($b->status == 'approved')
+                                    <span class="status-badge approved">
+                                        <i class="fas fa-check-circle me-1"></i>Disetujui
+                                    </span>
+                                @else
+                                    <span class="status-badge rejected">
+                                        <i class="fas fa-times-circle me-1"></i>Ditolak
+                                    </span>
+                                @endif
                             </div>
                         </div>
                     </div>
 
-                    @if($b->keterangan)
-                    <div class="keterangan-section">
-                        <label>Keterangan:</label>
-                        <p class="keterangan-text">{{ $b->keterangan }}</p>
-                    </div>
-                    @endif
-                </div>
+                    <div class="card-body pb-4">
+                        <div class="booking-details">
+                            <div class="detail-item">
+                                <div class="detail-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <label>Tanggal Pinjam</label>
+                                    <span>{{ \Carbon\Carbon::parse($b->tanggal)->format('l, d F Y') }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-icon">
+                                    <i class="fas fa-business-time"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <label>Waktu</label>
+                                    <span>{{ \Carbon\Carbon::parse($b->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($b->jam_selesai)->format('H:i') }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <div class="detail-icon">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <label>Durasi</label>
+                                    <span>
+                                        @php
+                                            $start = \Carbon\Carbon::parse($b->jam_mulai);
+                                            $end = \Carbon\Carbon::parse($b->jam_selesai);
+                                            $duration = $end->diff($start);
+                                            $hours = $duration->h;
+                                            $minutes = $duration->i;
+                                            $totalMinutes = ($hours * 60) + $minutes;
+                                            $formattedDuration = '';
+                                            if ($hours > 0) {
+                                                $formattedDuration .= $hours . ' jam';
+                                            }
+                                            if ($minutes > 0) {
+                                                $formattedDuration .= ($formattedDuration ? ' ' : '') . $minutes . ' menit';
+                                            }
+                                            if ($totalMinutes == 0) {
+                                                $formattedDuration = '0 menit';
+                                            }
+                                        @endphp
+                                        {{ $formattedDuration }}
+                                    </span>
+                                </div>
+                            </div>
 
-                <div class="card-footer">
-                    <div class="booking-date">
-                        Diajukan pada {{ $b->created_at->format('d M Y H:i') }}
+                            @if($b->keterangan)
+                            <div class="detail-item">
+                                <div class="detail-icon">
+                                    <i class="fas fa-sticky-note"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <label>Keterangan</label>
+                                    <span class="keterangan-text">{{ $b->keterangan }}</span>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-light border-0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-plus me-1"></i>
+                                {{ $b->created_at->diffForHumans() }}
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
             @endforeach
         </div>
     @else
-        <!-- Empty State -->
+        <!-- Enhanced Empty State -->
         <div class="empty-state">
-            <div class="empty-icon">
-                <i class="fas fa-calendar-plus"></i>
+            <div class="empty-illustration">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-times"></i>
+                </div>
             </div>
             <div class="empty-content">
-                <h3>Belum Ada Riwayat Peminjaman</h3>
-                <p>Mulai dengan mengajukan peminjaman ruangan pertama Anda</p>
-                <a href="{{ route('peminjaman.create') }}" class="btn-primary">
-                    <i class="fas fa-plus"></i>
-                    Ajukan Peminjaman
+                <h3 class="mb-3">Belum Ada Riwayat Peminjaman</h3>
+                <p class="text-muted mb-4">Anda belum pernah melakukan peminjaman ruangan. Mulai sekarang untuk memesan ruangan yang Anda butuhkan!</p>
+                <a href="{{ route('peminjaman.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>Ajukan Peminjaman Pertama
                 </a>
             </div>
         </div>
@@ -179,885 +207,330 @@
 </div>
 
 <style>
-    /* CSS Variables dengan tema hangat yang diperbaiki */
-    :root {
-        /* Warm Color Palette - Dipertahankan */
-        --warm-50: #FFFBF5;
-        --warm-100: #FEF7ED;
-        --warm-200: #FDF2E0;
-        --warm-300: #FCE8C8;
-        --warm-400: #F8D4A1;
-        --warm-500: #E2B88A;
-        --warm-600: #C19660;
-        --warm-700: #A67C52;
-        --warm-800: #7A5C3C;
-        --warm-900: #4E3A28;
-        
-        /* Complementary Colors */
-        --teal-500: #10B981;
-        --purple-500: #A855F7;
-        --coral-500: #F43F5E;
-        --amber-500: #F59E0B;
-        --sky-500: #0EA5E9;
-        
-        /* Theme Variables - Dipertahankan */
-        --bg-primary: #FFFBF5;
-        --bg-secondary: #FFFFFF;
-        --bg-tertiary: #F8F5F0;
-        --text-primary: #2D2416;
-        --text-secondary: #5A4A36;
-        --text-tertiary: #8B7A65;
-        --text-quaternary: #BDB4A5;
-        --border-primary: #E8E1D3;
-        --border-secondary: #F2E9DD;
-        
-        /* Enhanced Gradients */
-        --gradient-warm: linear-gradient(135deg, #F8D4A1 0%, #C19660 50%, #A67C52 100%);
-        --gradient-warm-light: linear-gradient(135deg, #FCE8C8 0%, #E2B88A 100%);
-        --gradient-warm-subtle: linear-gradient(135deg, rgba(248, 212, 161, 0.1) 0%, rgba(193, 150, 96, 0.1) 100%);
-        --gradient-teal: linear-gradient(135deg, #6EE7B7 0%, #34D399 50%, #10B981 100%);
-        --gradient-coral: linear-gradient(135deg, #FDA4AF 0%, #FB7185 50%, #F43F5E 100%);
-        --gradient-amber: linear-gradient(135deg, #FCD34D 0%, #FBBF24 50%, #F59E0B 100%);
-        --gradient-sky: linear-gradient(135deg, #7DD3FC 0%, #38BDF8 50%, #0EA5E9 100%);
-        --gradient-sunset: linear-gradient(135deg, #F8D4A1 0%, #FDA4AF 50%, #D8B4FE 100%);
-        --gradient-ocean: linear-gradient(135deg, #7DD3FC 0%, #6EE7B7 50%, #FCD34D 100%);
-        
-        /* Enhanced Shadow System */
-        --shadow-sm: 0 2px 4px rgba(45, 36, 22, 0.05);
-        --shadow-md: 0 4px 8px rgba(45, 36, 22, 0.08);
-        --shadow-lg: 0 8px 16px rgba(45, 36, 22, 0.12);
-        --shadow-xl: 0 16px 32px rgba(45, 36, 22, 0.16);
-        --shadow-2xl: 0 25px 50px rgba(45, 36, 22, 0.2);
-        --shadow-glow: 0 0 20px rgba(248, 212, 161, 0.25);
-        --shadow-glow-teal: 0 0 20px rgba(110, 231, 183, 0.25);
-        --shadow-glow-coral: 0 0 20px rgba(253, 164, 175, 0.25);
-        --shadow-glow-amber: 0 0 20px rgba(252, 211, 77, 0.25);
-        --shadow-glow-sky: 0 0 20px rgba(125, 211, 252, 0.25);
-        
-        /* Glass Effect - Lebih Subtle */
-        --glass-bg: rgba(255, 255, 255, 0.85);
-        --glass-border: rgba(232, 225, 211, 0.4);
-    }
-    
-    :root[data-theme="dark"] {
-        --bg-primary: #1A1814;
-        --bg-secondary: #221F1A;
-        --bg-tertiary: #2A2620;
-        --text-primary: #F5E6D3;
-        --text-secondary: #D4C4B0;
-        --text-tertiary: #A89986;
-        --text-quaternary: #7C6E5C;
-        --border-primary: #3A342C;
-        --border-secondary: #302A24;
-        --glass-bg: rgba(34, 31, 26, 0.85);
-        --glass-border: rgba(58, 52, 44, 0.4);
-    }
+/* Header dengan gradien subtle */
+.header-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    border-left: 4px solid #6A5A41;
+}
 
-    /* Global Styles */
-    body {
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
+.header-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 12px rgba(106, 90, 65, 0.2);
+}
 
-    /* Header Styles - Enhanced */
-    .dashboard-header {
-        margin-bottom: 2rem;
-    }
+.stats-badge {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(106, 90, 65, 0.1);
+}
 
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 2rem;
-    }
+.stats-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #6A5A41;
+    line-height: 1;
+}
 
-    .title-section {
-        flex: 1;
-    }
+.stats-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
 
-    .page-title {
-        font-family: 'Playfair Display', serif;
-        font-weight: 700;
-        font-size: 2.5rem;
-        background: var(--gradient-warm);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0 0 0.5rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
+/* Filter Pills */
+.filter-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
 
-    .page-subtitle {
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-        margin: 0;
-    }
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #dee2e6;
+    background: white;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
 
-    .stats-section {
-        display: flex;
-        gap: 1rem;
-    }
+.filter-btn:hover {
+    border-color: #6A5A41;
+    color: #6A5A41;
+    transform: translateY(-2px);
+}
 
-    .stat-card {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1.25rem 1.5rem;
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: 1rem;
-        box-shadow: var(--shadow-lg);
-        transition: all 0.3s ease;
-    }
+.filter-btn.active {
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    border-color: #6A5A41;
+    color: white;
+    box-shadow: 0 4px 12px rgba(106, 90, 65, 0.2);
+}
 
-    .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-xl);
-    }
+/* Booking Cards */
+.booking-card {
+    transition: all 0.3s ease;
+    border-radius: 1rem;
+    overflow: hidden;
+}
 
-    .stat-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 1rem;
-        background: var(--gradient-warm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        color: white;
-        box-shadow: var(--shadow-md);
-    }
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+}
 
-    .stat-info {
-        display: flex;
-        flex-direction: column;
-    }
+.room-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(106, 90, 65, 0.2);
+    transition: all 0.3s ease;
+}
 
-    .stat-number {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        line-height: 1;
-    }
+.booking-card:hover .room-icon {
+    transform: scale(1.05) rotate(5deg);
+}
 
-    .stat-label {
-        font-size: 0.875rem;
-        opacity: 0.8;
-        color: var(--text-secondary);
-    }
+.booking-id {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
 
-    /* Alert Styles - Enhanced */
-    .alert-message {
-        display: flex;
-        align-items: flex-start;
-        gap: 1rem;
-        padding: 1.25rem 1.5rem;
-        border-radius: 1rem;
-        margin-bottom: 2rem;
-        position: relative;
-        animation: slideDown 0.4s ease-out;
-    }
+.status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+}
 
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
+.status-badge.pending {
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: white;
+}
 
-    .alert-message.success {
-        background: rgba(40, 167, 69, 0.1);
-        border: 1px solid rgba(40, 167, 69, 0.2);
-        color: var(--teal-700);
-    }
+.status-badge.approved {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
 
-    .alert-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--gradient-teal);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        flex-shrink: 0;
-    }
+.status-badge.rejected {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+    color: white;
+}
 
-    .alert-content {
-        flex: 1;
-    }
+/* Booking Details */
+.booking-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 
-    .alert-title {
-        font-weight: 600;
-        color: var(--teal-700);
-        margin: 0 0 0.5rem 0;
-        font-size: 1.1rem;
-    }
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
 
-    .alert-content p {
-        margin: 0;
-        opacity: 0.9;
-    }
+.detail-icon {
+    width: 32px;
+    height: 32px;
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6A5A41;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
 
-    .alert-close {
-        background: none;
-        border: none;
-        color: var(--teal-500);
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s ease;
-    }
+.booking-card:hover .detail-icon {
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    color: white;
+    transform: scale(1.05);
+}
 
-    .alert-close:hover {
-        background: rgba(0, 0, 0, 0.1);
-        color: var(--teal-700);
-    }
+.detail-content {
+    flex: 1;
+}
 
-    /* Filter Section - Enhanced */
-    .filter-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 1.25rem 1.5rem;
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: 1rem;
-        box-shadow: var(--shadow-md);
-    }
+.detail-content label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
 
-    .filter-group {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-    }
+.detail-content span {
+    font-size: 0.875rem;
+    color: #212529;
+    font-weight: 500;
+}
 
-    .filter-item {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
+.keterangan-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 
-    .filter-item label {
-        font-weight: 500;
-        color: var(--text-primary);
-        white-space: nowrap;
-    }
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 1rem;
+    border: 2px dashed #dee2e6;
+}
 
-    .filter-select {
-        padding: 0.625rem 1rem;
-        border: 2px solid var(--border-primary);
-        border-radius: 0.75rem;
-        background: var(--glass-bg);
-        color: var(--text-primary);
-        font-family: 'Inter', sans-serif;
-        transition: all 0.3s ease;
-    }
+.empty-illustration {
+    margin-bottom: 2rem;
+}
 
-    .filter-select:focus {
-        outline: none;
-        border-color: var(--warm-500);
-        box-shadow: 0 0 0 3px rgba(248, 212, 161, 0.2);
-    }
+.empty-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 10px 25px rgba(106, 90, 65, 0.2);
+    animation: pulse 2s ease-in-out infinite;
+}
 
-    .btn-refresh {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.625rem 1rem;
-        background: var(--gradient-warm);
-        color: white;
-        border: none;
-        border-radius: 0.75rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: var(--shadow-sm);
-    }
+.empty-icon i {
+    font-size: 2.5rem;
+    color: white;
+}
 
-    .btn-refresh:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
 
-    /* Booking Cards - Enhanced with Color Play */
-    .booking-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-        gap: 1.5rem;
-    }
+/* Primary Button */
+.btn-primary {
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
 
-    .booking-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--glass-border);
-        border-radius: 1.25rem;
-        box-shadow: var(--shadow-lg);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        overflow: hidden;
-        position: relative;
-    }
+.btn-primary:hover {
+    background: linear-gradient(135deg, #6A5A41 0%, #8B7355 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(106, 90, 65, 0.3);
+}
 
-    .booking-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: var(--gradient-warm);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .booking-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-2xl);
-    }
-
-    .booking-card:hover::before {
-        opacity: 1;
-    }
-
-    .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        padding: 1.5rem 1.5rem 1rem;
-        border-bottom: 1px solid var(--border-primary);
-    }
-
-    .room-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .room-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 1rem;
-        background: var(--gradient-warm);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.25rem;
-        box-shadow: var(--shadow-md);
-        transition: all 0.3s ease;
-    }
-
-    .booking-card:hover .room-icon {
-        transform: scale(1.05) rotate(5deg);
-    }
-
-    .room-details {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .room-name {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0 0 0.25rem 0;
-        font-size: 1.25rem;
-    }
-
-    .booking-id {
-        font-size: 0.875rem;
-        color: var(--warm-600);
-        opacity: 0.8;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        white-space: nowrap;
-        transition: all 0.3s ease;
-    }
-
-    .status-badge.pending {
-        background: var(--gradient-amber);
-        color: white;
-        box-shadow: var(--shadow-glow-amber);
-    }
-
-    .status-badge.approved {
-        background: var(--gradient-teal);
-        color: white;
-        box-shadow: var(--shadow-glow-teal);
-    }
-
-    .status-badge.rejected {
-        background: var(--gradient-coral);
-        color: white;
-        box-shadow: var(--shadow-glow-coral);
-    }
-
-    .card-body {
+/* Responsive */
+@media (max-width: 768px) {
+    .header-section {
         padding: 1.5rem;
     }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .info-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
-
-    .info-icon {
+    
+    .header-icon {
         width: 40px;
         height: 40px;
-        border-radius: 0.75rem;
-        background: var(--gradient-warm-subtle);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--warm-600);
-        font-size: 0.875rem;
-        flex-shrink: 0;
-        transition: all 0.3s ease;
-    }
-
-    .info-content {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .info-content label {
-        font-size: 0.75rem;
-        color: var(--text-tertiary);
-        margin-bottom: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 500;
-    }
-
-    .info-content span {
-        font-weight: 500;
-        color: var(--text-primary);
-        font-size: 0.95rem;
-    }
-
-    .keterangan-section {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border-primary);
-    }
-
-    .keterangan-section label {
-        font-size: 0.875rem;
-        color: var(--text-tertiary);
-        margin-bottom: 0.5rem;
-        display: block;
-        font-weight: 500;
-    }
-
-    .keterangan-text {
-        color: var(--text-secondary);
-        opacity: 0.9;
-        margin: 0;
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-
-    .card-footer {
-        padding: 1rem 1.5rem;
-        background: var(--gradient-warm-subtle);
-        border-top: 1px solid var(--border-primary);
-    }
-
-    .booking-date {
-        font-size: 0.875rem;
-        color: var(--text-tertiary);
-        text-align: center;
-    }
-
-    /* Empty State - Enhanced */
-    .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 2px dashed var(--border-primary);
-        border-radius: 1.25rem;
-        box-shadow: var(--shadow-lg);
-    }
-
-    .empty-icon {
-        font-size: 4rem;
-        background: var(--gradient-warm);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 1.5rem;
-    }
-
-    .empty-content h3 {
-        font-family: 'Playfair Display', serif;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .empty-content p {
-        opacity: 0.7;
-        margin-bottom: 2rem;
         font-size: 1rem;
-        color: var(--text-secondary);
     }
-
-    .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 0.875rem 2rem;
-        background: var(--gradient-warm);
-        color: white;
-        text-decoration: none;
-        border-radius: 0.75rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: var(--shadow-md);
-        position: relative;
-        overflow: hidden;
+    
+    .stats-number {
+        font-size: 1.25rem;
     }
-
-    .btn-primary::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
+    
+    .filter-pills {
+        flex-direction: column;
         width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s ease;
     }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-xl);
-        color: white;
+    
+    .filter-btn {
+        text-align: center;
+        border-radius: 0.5rem;
     }
-
-    .btn-primary:hover::before {
-        left: 100%;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1200px) {
-        .booking-cards {
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-        }
-    }
-
-    @media (max-width: 768px) {
-        .header-content {
-            flex-direction: column;
-            text-align: center;
-            gap: 1.5rem;
-        }
-
-        .stats-section {
-            justify-content: center;
-        }
-
-        .page-title {
-            justify-content: center;
-            font-size: 2rem;
-        }
-
-        .filter-section {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: stretch;
-        }
-
-        .filter-group {
-            justify-content: center;
-        }
-
-        .booking-cards {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        .info-grid {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-        }
-
-        .card-header {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: stretch;
-        }
-
-        .room-info {
-            justify-content: center;
-            text-align: center;
-        }
-
-        .status-badge {
-            align-self: center;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .content-wrapper {
-            padding: 0 1rem;
-        }
-
-        .stat-card {
-            padding: 0.75rem 1rem;
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            font-size: 1rem;
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-        }
-
-        .empty-state {
-            padding: 3rem 1rem;
-        }
-
-        .empty-icon {
-            font-size: 3rem;
-        }
-
-        .btn-primary {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .filter-group {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .filter-item {
-            justify-content: space-between;
-        }
-    }
-
-    @media (max-width: 380px) {
-        .room-info {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .info-item {
-            flex-direction: column;
-            text-align: center;
-            gap: 0.5rem;
-        }
-
-        .info-icon {
-            align-self: center;
-        }
-    }
+}
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Function to generate session options (7:00 to 15:30, 45 minutes each)
-        function generateSessions() {
-            const sessions = [];
-            let startHour = 7;
-            let startMinute = 0;
-            
-            while (startHour < 15 || (startHour === 15 && startMinute <= 30)) {
-                const endHour = startMinute === 0 ? startHour : startHour + 1;
-                const endMinute = startMinute === 0 ? 45 : 30;
-                
-                const startTime = `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`;
-                const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
-                
-                sessions.push({
-                    id: sessions.length + 1,
-                    startTime: startTime,
-                    endTime: endTime
-                });
-                
-                // Move to next session
-                if (startMinute === 0) {
-                    startMinute = 45;
-                } else {
-                    startHour++;
-                    startMinute = 0;
-                }
-            }
-            
-            return sessions;
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    window.filterTable = function(status) {
+        const bookingItems = document.querySelectorAll('.booking-item');
+        const filterBtns = document.querySelectorAll('.filter-btn');
         
-        const allSessions = generateSessions();
+        // Update active button
+        filterBtns.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
         
-        // Get booking data from HTML data attributes
-        const bookingCards = document.querySelectorAll('.booking-card');
-        
-        bookingCards.forEach(card => {
-            const bookingId = card.dataset.id;
-            const sessionElement = document.getElementById(`session-${bookingId}`);
-            const durationElement = document.getElementById(`duration-${bookingId}`);
-            
-            // Extract booking data from card (in a real app, this would come from the server)
-            const bookingData = {
-                sesi_data: card.querySelector('.sesi-data')?.textContent,
-                jam_mulai: card.querySelector('.jam-mulai')?.textContent,
-                jam_selesai: card.querySelector('.jam-selesai')?.textContent
-            };
-            
-            let sessionData = [];
-            let durationMinutes = 0;
-            
-            // Parse session data if available
-            if (bookingData.sesi_data) {
-                try {
-                    sessionData = JSON.parse(bookingData.sesi_data);
-                    // Calculate total duration
-                    durationMinutes = sessionData.length * 45;
-                } catch (e) {
-                    console.error('Error parsing session data:', e);
-                }
-            } else if (bookingData.jam_mulai && bookingData.jam_selesai) {
-                // Fallback to calculate duration from jam_mulai and jam_selesai
-                const start = new Date(`2000-01-01T${bookingData.jam_mulai}`);
-                const end = new Date(`2000-01-01T${bookingData.jam_selesai}`);
-                durationMinutes = (end - start) / 60000; // Convert to minutes
-                
-                // Try to find matching sessions
-                const startSession = allSessions.find(s => s.startTime === bookingData.jam_mulai);
-                const endSession = allSessions.find(s => s.endTime === bookingData.jam_selesai);
-                
-                if (startSession && endSession) {
-                    for (let i = startSession.id - 1; i < endSession.id; i++) {
-                        if (allSessions[i]) {
-                            sessionData.push(allSessions[i]);
-                        }
-                    }
-                }
-            }
-            
-            // Calculate hours and minutes
-            const hours = Math.floor(durationMinutes / 60);
-            const minutes = durationMinutes % 60;
-            
-            // Format session text
-            let sessionText = '';
-            if (sessionData.length > 0) {
-                const sessionIds = sessionData.map(s => `Sesi ${s.id}`);
-                sessionText = sessionIds.join(', ');
-            } else if (bookingData.jam_mulai && bookingData.jam_selesai) {
-                sessionText = `${bookingData.jam_mulai} - ${bookingData.jam_selesai}`;
+        // Filter items
+        bookingItems.forEach(item => {
+            if (status === 'all' || item.dataset.status === status) {
+                item.style.display = 'block';
+                // Add fade in animation
+                item.style.animation = 'fadeIn 0.5s ease';
             } else {
-                sessionText = 'Tidak tersedia';
+                item.style.display = 'none';
             }
-            
-            // Format duration text
-            let durationText = '';
-            if (hours > 0) {
-                durationText = `${hours} jam ${minutes > 0 ? minutes + ' menit' : ''}`;
-            } else if (minutes > 0) {
-                durationText = `${minutes} menit`;
-            } else {
-                durationText = 'Tidak tersedia';
-            }
-            
-            // Update DOM elements
-            if (sessionElement) sessionElement.textContent = sessionText;
-            if (durationElement) durationElement.textContent = durationText;
         });
-        
-        // Filter functionality
-        function filterTable() {
-            const filter = document.querySelector('.filter-select').value;
-            const cards = document.querySelectorAll('.booking-card');
-            
-            cards.forEach(card => {
-                if (filter === 'all' || card.dataset.status === filter) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-        
-        // Alert close functionality
-        const alertCloseButtons = document.querySelectorAll('.alert-close');
-        
-        alertCloseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const alertMessage = this.closest('.alert-message');
-                alertMessage.style.animation = 'slideUp 0.3s ease-out forwards';
-                
-                setTimeout(() => {
-                    alertMessage.remove();
-                }, 300);
-            });
-        });
-        
-        // Auto-hide success messages after 5 seconds
-        const successAlerts = document.querySelectorAll('.alert-message.success');
-        successAlerts.forEach(alert => {
+    };
+    
+    // Auto-hide success messages
+    const successAlerts = document.querySelectorAll('.alert-success');
+    successAlerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
             setTimeout(() => {
-                alert.style.animation = 'slideUp 0.3s ease-out forwards';
-                
-                setTimeout(() => {
-                    alert.remove();
-                }, 300);
-            }, 5000);
-        });
+                alert.remove();
+            }, 500);
+        }, 5000);
     });
     
-    // Add slide up animation
+    // Add fade in animation
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes slideUp {
+        @keyframes fadeIn {
             from {
-                opacity: 1;
-                transform: translateY(0);
+                opacity: 0;
+                transform: translateY(20px);
             }
             to {
-                opacity: 0;
-                transform: translateY(-20px);
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     `;
     document.head.appendChild(style);
+});
 </script>
 @endsection

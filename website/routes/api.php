@@ -34,7 +34,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // ==================== JADWAL RUANG ====================
     Route::get('/jadwal', [JadwalRegulerController::class, 'index']);
 
-    // ==================== PEMINJAMAN OLEH PEMINJAM ====================
+ 
     // List Peminjaman user
     Route::get('/peminjaman', [PeminjamanController::class, 'index']);
 

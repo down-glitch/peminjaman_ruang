@@ -9,7 +9,14 @@ use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\JadwalRegulerController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\AdminDashboardController;
+// routes/web.php
 
+use App\Http\Controllers\BookingController;
+
+// ... rute lainnya ...
+
+Route::put('/peminjaman/{id}/cancel', [BookingController::class, 'cancel'])->name('peminjaman.cancel');
 // ==================== ROOT ====================
 Route::get('/', function () {
     if (Auth::check()) {
@@ -38,7 +45,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 // ==================== SETELAH LOGIN ====================
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/admin/dashboard', fn() => view('admin.dashboard'))
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
         ->middleware('role:admin')
         ->name('admin.dashboard');
 
